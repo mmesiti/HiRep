@@ -44,5 +44,5 @@ MACRO += -DIO_FLUSH
 #CC = mpicc
 CC = gcc
 #CFLAGS = -Wall -std=c99 -O2 -fomit-frame-pointer -msse -msse2
-CFLAGS = -Wall -std=c99 -g -O0
+CFLAGS = -Wall -std=c99 -g -O3
 LDFLAGS =

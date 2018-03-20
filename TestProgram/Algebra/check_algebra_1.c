@@ -46,9 +46,13 @@ static float Tr=(float)(NG+2)/2;
 #error: check_algebra_1 only works only on serial jobs
 #endif
 
-
+#ifdef GAUGE_SUN
 static int dAdj=NG*NG-1;
 static float fund=(float)(NG*NG-1)/(2*(float)(NG));
+#elif defined(GAUGE_SPN)
+static int dAdj=NG*(NG+1)/2;
+static float fund=(float)(NG*(NG+1)/2)/(2*(float)(NG));
+#endif
 
 int main(int argc,char *argv[])
 {
@@ -59,7 +63,11 @@ int main(int argc,char *argv[])
    int i,j;
    
    
+#ifdef GAUGE_SUN
    printf("Gauge group: SU(%d)\n",NG);
+#elif defined(GAUGE_SPN)
+   printf("Gauge group: SP(%d)\n",NG);
+#endif
    printf("Fermion representation: dim = %d\n",NF);
    printf("\n");
 
@@ -105,10 +113,10 @@ int main(int argc,char *argv[])
    for (i=1;i<dAdj;i++)
    {
       _algebra_represent(a,f[i]);
-      _fund_algebra_represent(A,f[i]);
-
       _suNf_times_suNf(tmp,a,a);
       _suNf_add_assign(cas,tmp);
+
+      _fund_algebra_represent(A,f[i]);
       _suNg_times_suNg(TMP,A,A);
       _suNg_add_assign(CAS,TMP);
    }
