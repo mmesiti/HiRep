@@ -1,0 +1,30 @@
+/***************************************************************************\
+* Copyright (c) 2008, Agostino Patella                                      *   
+* All rights reserved.                                                      * 
+\***************************************************************************/
+
+#include "suN.h"
+#include <math.h>
+
+#if (NG!=$N$) 
+#error : Mismatch between NG and ExpX!
+#endif
+
+
+/*
+*  Approssima
+*  V = exp(sum(A) iT(A)*h(A)*dt)
+*  con una matrice unitaria secondo l'algoritmo di Luscher
+*  e sostituisce
+*  V.U -> U
+*/
+void SP_ExpX(double dt, SPg_algebra_vector *h, SPg *r)
+{
+
+$GROUP::EXPX:(dt):(*h):(*u)$
+
+
+}
+
+
+

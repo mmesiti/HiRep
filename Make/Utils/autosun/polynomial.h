@@ -1,5 +1,9 @@
+#ifndef POLYNOMIAL_H        
+#define POLYNOMIAL_H        
+#include "./complex.h"
+#include "./list.h"
+#include <cmath>
 #define _ZERO_ (1e-10)
-
 bool equal(FLOATING a,FLOATING b)
 {
 	return fabs(a-b) < _ZERO_;
@@ -226,7 +230,7 @@ public:
 		index2.add(string(name)+".im", 1);
 		orderedlist<rmonomial,complex>::add(index2,complex(0.0,1.0));
 	}
-
+	
 	using polynomial::operator=;
 };
 
@@ -247,3 +251,4 @@ public:
 
 	using polynomial::operator=;
 };
+#endif

@@ -15,6 +15,10 @@ $(EXEC): $(MKDIR)/MkFlags main.cc adjoint.h antisymmetric.h complex.h fundamenta
 	$(CXX) main.cc -o ${EXEC} ${MACRO} &&\
 	echo " done." || ( echo " failed." && false )
 
+spnalgtest: $(MKDIR)/MkFlags spn_vs_sun_algtest.cpp adjoint.h antisymmetric.h complex.h fundamental.h list.h matrix.h polynomial.h print.h representation.h sparse.h style.h sun.h symmetric.h
+	$(CXX) -o spnalgtest spn_vs_sun_algtest.cpp -g -O0 ${MACRO} &&\
+	echo " done." || ( echo " failed." && false )
+
 include $(MKDIR)/MkRules
 
 MACRO = -D_${REPR}_ -D_${GAUGE_GROUP}_ -D_PICA_STYLE_ -DNDEBUG

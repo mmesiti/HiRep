@@ -71,6 +71,11 @@ typedef struct
 #define _complex_add_1(a) \
    (a).re+=1.
 
+#define _complex_m1(a) \
+   (a).re=-1.;	\
+   (a).im=0.
+
+
 /*
 * a=i (a complex)
 */
@@ -334,6 +339,50 @@ typedef struct
 #define _complex_clc_assign(a,z1,c1,z2,c2) \
     _complex_mul_assign(a,z1,c1); \
     _complex_mul_assign(a,z2,c2);
+
+//////////NEW MACROS
+/*
+* a=-b*(c^+) (a,b,c complex)
+*/
+#define _complex_minus_mul_star(a,b,c) \
+   (a).re=-( (b).re*(c).re + (b).im*(c).im ); \
+   (a).im=-( (b).im*(c).re - (b).re*(c).im )
+
+/*
+* a-=b*(c^+) (a,b,c complex)
+*/
+#define _complex_mul_star_massign(a,b,c) \
+   (a).re-=( (b).re*(c).re + (b).im*(c).im ); \
+   (a).im-=( (b).im*(c).re - (b).re*(c).im )
+
+/*
+* a+=b*(c^+) (a,b,c complex)
+*/
+#define _complex_mul_star_passign(a,b,c) \
+   (a).re+=( (b).re*(c).re + (b).im*(c).im ); \
+   (a).im+=( (b).im*(c).re - (b).re*(c).im )
+
+/*
+* a-=b*c (a,b,c complex)
+*/
+#define _complex_mul_massign(a,b,c) \
+   (a).re-=( (b).re*(c).re - (b).im*(c).im ); \
+   (a).im-=( (b).im*(c).re + (b).re*(c).im )
+   
+/*
+* a+=b*c (a,b,c complex)
+*/
+#define _complex_mul_passign(a,b,c) \
+   (a).re+=( (b).re*(c).re - (b).im*(c).im ); \
+   (a).im+=( (b).im*(c).re + (b).re*(c).im )
+
+/*
+* a=-b*c (a,b,c complex)
+*/
+#define _complex_minus_mul(a,b,c) \
+   (a).re= - (b).re*(c).re + (b).im*(c).im ; \
+   (a).im=-( (b).im*(c).re + (b).re*(c).im )
+
 
 
 #endif

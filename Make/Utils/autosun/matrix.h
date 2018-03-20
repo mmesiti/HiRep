@@ -1,3 +1,8 @@
+#ifndef MATRIX_H
+#define MATRIX_H
+#include "./complex.h"
+#include "./sparse.h"
+#include "./polynomial.h"
 class smatrix : public sparsematrix<complex>
 {
 public:
@@ -97,6 +102,36 @@ public:
 		}
 		return RET.str();
 	}
+	
+	string symplectic_compressed_assignment(const char* op, const char* name) const
+	{
+		ostringstream RET;
+		string tmp;
+		if(isreal())
+		{
+			cerr << "Error: A symplectic matrix set to have real values \n" ;
+			exit(1);
+		}
+		else
+		{
+			for(int i = 0; i < size/2; i++)
+				for(int j = 0; j < size; j++)
+				{
+					tmp = get(i,j).str_real();
+					RET << _INDENT_;
+					RET << name << mindex(i,j,size) << ".re " << op << " " << tmp;
+					RET << _ENDL_;
+
+					tmp = get(i,j).str_imag();
+					RET << _INDENT_;
+					RET << name << mindex(i,j,size) << ".im " << op << " " << tmp;
+					if(i == size/2-1 && j == size-1) RET << _LASTENDL_;
+					else RET << _ENDL_;
+				}
+		}
+		return RET.str();
+	}
+	
 };
 
 
@@ -153,6 +188,75 @@ public:
 				elem << name << mindex(i,j,size);
 				cvariable tmp(elem.str().c_str());
 				set(i,j, tmp);
+			}
+	}
+	
+	using pmatrix::operator=;
+};
+
+/* A compressed symplectic matrix.
+   We actually build a complete matrix here using the elements of a symplectic one. */
+class spmatrix : public pmatrix
+{
+public:
+	spmatrix(int N, const string& name) : pmatrix(N)
+	{
+		for(int i = 0; i < N/2; i++)
+			for(int j = 0; j < N; j++)
+			{
+				ostringstream elem;
+				elem << name << mindex(i,j,size);
+				cvariable tmp(elem.str().c_str());
+				set(i,j, tmp);
+			}
+	   for(int i = 0; i < N/2; i++)
+			for(int j = 0; j < N/2; j++)
+			{
+				ostringstream elem;
+				elem << name << mindex(i,j+N/2,size);
+				cvariable tmp(elem.str().c_str());
+				tmp.conjugate();
+				tmp.minus();
+				set(i+N/2,j, tmp);
+			}
+		for(int i = 0; i < N/2; i++)
+			for(int j = 0; j < N/2; j++)
+			{
+				ostringstream elem;
+				elem << name << mindex(i,j,size);
+				cvariable tmp(elem.str().c_str());
+				tmp.conjugate();
+				set(i+N/2,j+N/2, tmp);
+			}
+	}
+	spmatrix(int N, char* name) : pmatrix(N)
+	{
+		for(int i = 0; i < N/2; i++)
+			for(int j = 0; j < N; j++)
+			{
+				ostringstream elem;
+				elem << name << mindex(i,j,size);
+				cvariable tmp(elem.str().c_str());
+				set(i,j, tmp);
+			}
+		for(int i = 0; i < N/2; i++)
+			for(int j = 0; j < N/2; j++)
+			{
+				ostringstream elem;
+				elem << name << mindex(i,j+N/2,size);
+				cvariable tmp(elem.str().c_str());
+				tmp.conjugate();
+				tmp.minus();
+				set(i+N/2,j, tmp);
+			}
+		for(int i = 0; i < N/2; i++)
+			for(int j = 0; j < N/2; j++)
+			{
+				ostringstream elem;
+				elem << name << mindex(i,j,size);
+				cvariable tmp(elem.str().c_str());
+				tmp.conjugate();
+				set(i+N/2,j+N/2, tmp);
 			}
 	}
 	
@@ -281,3 +385,4 @@ public:
 
 	using pvector::operator=;
 };
+#endif

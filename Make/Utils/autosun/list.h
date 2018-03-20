@@ -1,3 +1,11 @@
+#ifndef LIST_H
+#define LIST_H
+#include <string>
+#include <ostream>
+#include <iostream>
+#include <cstring>
+
+using namespace std;
 typedef long long int KEYTYPE;
 
 template<class INDEX, class VALUE> class orderedlist
@@ -364,7 +372,9 @@ public:
 
 template<class INDEX, class VALUE> orderedlist<INDEX,VALUE>::~orderedlist<INDEX,VALUE>()
 {
+
 	for(KEYTYPE i = 0; i < length; i++)
 		delete data[i];
 	if(length != 0) delete[] data;
 }
+#endif

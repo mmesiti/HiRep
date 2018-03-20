@@ -278,7 +278,9 @@ void apply_BCs_on_spinor_field_flt(spinor_field_flt *sp) {
 #endif
 }
 
+#ifdef BC_T_OPEN
 static void cl_open_BCs(suNfc_field*);
+#endif
 
 void apply_BCs_on_clover_term(suNfc_field *cl) {
 #ifdef BC_T_OPEN
@@ -725,6 +727,7 @@ static void mf_open_BCs(suNg_av_field *force) {
 /* BOUNDARY CONDITIONS TO BE APPLIED ON THE CLOVER TERM                    */
 /***************************************************************************/
 
+#ifdef BC_T_OPEN
 static void cl_open_BCs(suNfc_field *cl)
 {
 	int index;
@@ -787,7 +790,7 @@ static void cl_open_BCs(suNfc_field *cl)
 		}
 	}
 }
-
+#endif
 
 
 /***************************************************************************/
