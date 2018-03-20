@@ -19,9 +19,12 @@ void gaussian_momenta(suNg_av_field *momenta) {
   geometry_descriptor *gd=momenta->type;
   
   const double c3=1./sqrt(_FUND_NORM2);
+#ifndef GAUGE_SPN
   const int ngen=NG*NG-1;
-  //const int ngen=NG*(NG-1)/2;
-  
+#else
+ const int ngen=NG*(NG-1)/2;
+#endif
+ 
 
 
   

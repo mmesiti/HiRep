@@ -198,7 +198,11 @@ void read_gauge_field_eolexi_BE(char filename[])
     int ix=ipt(0,0,0,0);
     for(mu=0;mu<4;mu++) {
       lprintf("IO",20,"x=(0,0,0,0) mu=%d pu_gauge =\n",mu);
+#ifdef GAUGE_SPN
+      for(i=0; i<NG/2; i++) {
+#else
       for(i=0; i<NG; i++) {
+#endif
         lprintf("IO",20,"[ ");
         for(j=0; j<NG; j++){
 #ifdef GAUGE_SON
@@ -208,7 +212,12 @@ void read_gauge_field_eolexi_BE(char filename[])
 #endif //GAUGE_SON
 	}
         lprintf("IO",20,"]\n");
+#ifdef GAUGE_SPN // useless, only for parenthesis match
       }
+#else
+      }
+#endif
+
     }
     free(eolexi_field);
   }
@@ -378,7 +387,11 @@ void read_gauge_field_eolexi_LE(char filename[])
     int ix=ipt(0,0,0,0);
     for(mu=0;mu<4;mu++) {
       lprintf("IO",20,"x=(0,0,0,0) mu=%d pu_gauge =\n",mu);
+#ifdef GAUGE_SPN
+      for(i=0; i<NG/2; i++) {
+#else
       for(i=0; i<NG; i++) {
+#endif
         lprintf("IO",20,"[ ");
         for(j=0; j<NG; j++){
 #ifdef GAUGE_SON
@@ -388,7 +401,11 @@ void read_gauge_field_eolexi_LE(char filename[])
 #endif //GAUGE_SON
 	}
         lprintf("IO",20,"]\n");
+#ifdef GAUGE_SPN // useless, only for parenthesis match
       }
+#else
+      }
+#endif
     }
     free(eolexi_field);
   }

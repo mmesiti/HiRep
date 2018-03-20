@@ -13,6 +13,11 @@
 #define XG(m,a,b) ((m)+(a)*NG+(b))
 #define XF(m,a,b) ((m)+(a)*NF+(b))
 
+#ifdef GAUGE_SPN
+void _group_represent2(suNf* v, suNg *u) {
+  _group_represent(*v,*u);
+}
+#else
 void _group_represent2(suNf* v, suNg *u) {
 #ifdef WITH_QUATERNIONS
   *v = *((suNf *)u);
@@ -170,7 +175,7 @@ void _group_represent2(suNf* v, suNg *u) {
 #endif
 
 }
-
+#endif
 
 void _group_represent2_flt(suNf_flt* v, suNg_flt *u) {
 

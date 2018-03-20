@@ -47,7 +47,22 @@ static void rotate(suNg_vector *pu1, suNg_vector *pu2, double s[4]) /* same as i
 }
 
 #ifndef GAUGE_SON
+#ifdef GAUGE_SPN
+void random_suNg(suNg *r) {
+  suNgfull ut, *u;
+
+	for (int i=0; i<NG*NG/2; ++i) { ut.c[i].re=r->c[i].re; ut.c[i].im=r->c[i].im; }
+	for (int i=0; i<NG/2; ++i) {
+		for (int j=0; j<NG/2; ++j) {
+			int ind = NG*i+j;
+			ut.c[NG*NG/2+NG/2+ind].re=r->c[ind].re; ut.c[NG*NG/2+NG/2+ind].im=-r->c[ind].im;
+			ut.c[NG*NG/2+ind].re=-r->c[ind+NG/2].re; ut.c[NG*NG/2+ind].im=r->c[ind+NG/2].im;
+		}
+	}
+	u=&ut;
+#else
 void random_suNg(suNg *u) {
+#endif
 #ifdef WITH_QUATERNIONS
   random_su2(0.,u->c);
 #else
@@ -60,13 +75,32 @@ void random_suNg(suNg *u) {
     suNg_vector *pu2 = pu1 + 1;
     for (int j=i+1; j<NG; ++j) {
 		  random_su2(0.0,s);
-      rotate(pu1, pu2, s);
+#ifdef GAUGE_SPN
+	if( (i < NG/2 && j < NG/2) ){
+		rotate(pu1, pu2, s);
+		s[3] *=-1.;
+		s[1] *=-1.;
+		rotate(pu1+NG/2, pu2+NG/2,s);
+	} else if( ( i >= NG/2 && j > NG/2) ){
+		rotate(pu1,pu2,s);
+		s[3] *=-1.;		
+		s[1] *=-1.;
+		rotate(pu1-NG/2,pu2-NG/2,s);
+	} else if( ( j == i + NG/2) ) rotate(pu1,pu2,s) ;
+	else ;
+#else
+	rotate(pu1,pu2,s);
+#endif
       ++pu2; 
     } 
 	  ++pu1; 
   }
 #endif //WITH_QUATERNIONS
+#ifdef GAUGE_SPN
+	for (int i=0; i<NG*NG/2; ++i) { r->c[i].re=ut.c[i].re; r->c[i].im=ut.c[i].im; }
+#endif
 }
+
 #else
 void random_suNg(suNg *u) {
   suNg tmp;
@@ -81,4 +115,3 @@ void random_suNg(suNg *u) {
 }
 
 #endif
-

@@ -25,12 +25,26 @@
 
 
 void inv_suNg(suNg* a){
-  suNg b;
+
   complex col[NG];
   int indx[NG];
   double d;
   int i,j;
-  b=*a;
+  
+#ifdef GAUGE_SPN
+  suNgfull b;
+  for (int i=0; i<NG*NG/2; ++i) { b.c[i].re=a->c[i].re; b.c[i].im=a->c[i].im; }
+  for (int i=0; i<NG/2; ++i) {
+    for (int j=0; j<NG/2; ++j) {
+      int ind = NG*i+j;
+      b.c[NG*NG/2+NG/2+ind].re=a->c[ind].re; b.c[NG*NG/2+NG/2+ind].im=-a->c[ind].im;
+      b.c[NG*NG/2+ind].re=-a->c[ind+NG/2].re; b.c[NG*NG/2+ind].im=a->c[ind+NG/2].im;
+    }
+  }
+#else  
+  suNg b=*a;
+#endif
+
   ludcmp(b.c,indx,&d,NG);
   for (j=0;j<NG;j++){
     for (i=0;i<NG;i++){ 
