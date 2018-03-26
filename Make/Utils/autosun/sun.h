@@ -76,7 +76,7 @@ void group::init(int n, group::group_t type, smatrix*& TOUT)
                 exit(1);
             }
 
-            DIM = (N*N+N)/2;
+            DIM = N*(N+1)/2;
             TOUT = new smatrix[DIM];
 
             A = 0;

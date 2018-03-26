@@ -26,15 +26,23 @@ if (!($su2quat eq "0") and $Ng!=2) {
 
 my ($Nf,$c1,$c2);
 $c1="C"; #default gauge field complex
+
 if ($rep eq "REPR_FUNDAMENTAL") {
     $Nf=$Ng;
     $c2="C";
 } elsif ($rep eq "REPR_SYMMETRIC") {
     $Nf=$Ng*($Ng+1)/2;
     $c2="C";
+    if ($gauge_group eq "GAUGE_SPN") {
+        die("The symmetric representation for SPN is equivalent to the adjoint one. Use adjoint instead.\n")
+    }
+
 } elsif ($rep eq "REPR_ANTISYMMETRIC") {
     $Nf=$Ng*($Ng-1)/2;
     $c2="C";
+    if ($gauge_group eq "GAUGE_SPN") {
+        die("The antisymmetric representation for SPN is reducible. Aborting.\n")
+    }
 } elsif ($rep eq "REPR_ADJOINT") {
     if ($gauge_group eq "GAUGE_SPN") {
         $Nf=$Ng*($Ng+1)/2;
@@ -300,16 +308,13 @@ END
 
         write_vector_project();
 
-        if($gauge_group eq "GAUGE_SPN"){
-
-            if ($complex eq "R") {
-                write_suNr_multiply();
-                write_suNr_inverse_multiply();
-            }        
+        if(($gauge_group eq "GAUGE_SPN") and (($suff eq $fundsuff) or ($rep eq "REPR_FUNDAMENTAL"))){
+            
             write_spN_multiply();
             write_spN_inverse_multiply();
-            
-            
+            if ($complex eq "R") {
+                die("SPN compressed mat-vec macros have not been written for real types.\n");
+            }        
         } elsif ($su2quat==0) {
         
             if ($complex eq "R") {
@@ -349,8 +354,7 @@ END
 
 END
         ;
-
-        if($gauge_group eq "GAUGE_SPN"){
+        if(($gauge_group eq "GAUGE_SPN") and (($suff eq $fundsuff) or ($rep eq "REPR_FUNDAMENTAL"))){
         
             write_spN_dagger(); 
             write_spN_times_spN();
@@ -370,20 +374,8 @@ END
             write_spN_trace_im();
             write_suN_FMAT();
             
-            if ($complex eq "R") { # we only need these functions at the moment...
-                write_suNr_zero();
-                write_suNr_FMAT();
-                write_suNr_unit();
-                write_suNr_dagger();
-                write_suNr_times_suNr();
-                write_suNr_times_suNr_dagger();
-                write_suNr_dagger_times_suNr();
-                write_suNr_add_assign();
-                write_suNr_sub_assign();
-                write_suNr_mul();
-                write_suNr_trace_re();
-                write_suNr_sqnorm();
-                write_suNr_minus();
+            if ($complex eq "R") {
+                die("SPN compressed mat-mat macros have not been written for real types.\n");
             }
 
         } elsif ($su2quat==0) {
