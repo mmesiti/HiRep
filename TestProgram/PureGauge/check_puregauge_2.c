@@ -106,8 +106,11 @@ int main(int argc,char *argv[])
   double weight[3]={0.6,0.4,0.3};
   
   
- 
+#ifdef GAUGE_SUN 
   lprintf("MAIN",0,"Gauge group: SU(%d)\n",NG);
+#elif defined(GAUGE_SPN)
+  lprintf("MAIN",0,"Gauge group: SP(%d)\n",NG);
+#endif
   lprintf("MAIN",0,"global size is %dx%dx%dx%d\n",GLB_T,GLB_X,GLB_Y,GLB_Z);
   lprintf("MAIN",0,"proc grid is %dx%dx%dx%d\n",NP_T,NP_X,NP_Y,NP_Z);
 

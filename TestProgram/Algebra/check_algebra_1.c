@@ -22,6 +22,10 @@
 #include "utils.h"
 #include <assert.h>
 
+#ifdef GAUGE_SON
+#error "Test not implemented for SON."
+#endif
+
 #ifdef REPR_FUNDAMENTAL
 #define COMPLEX_REP
 #ifdef GAUGE_SPN
@@ -46,7 +50,7 @@ static float Tr=(float)NG;
 #ifdef REPR_ANTISYMMETRIC
 #define COMPLEX_REP
 #ifdef GAUGE_SPN
-static float C2=(float)(NG-2)*(NG+1)/(2*(NG-1));
+#error "Representation is reducible."
 #else
 static float C2=(float)(NG-2)*(NG+1)/NG;
 #endif
@@ -56,8 +60,7 @@ static float Tr=(float)(NG-2)/2;
 #ifdef REPR_SYMMETRIC
 #define COMPLEX_REP
 #ifdef GAUGE_SPN
-static float C2=(float)(NG+2)/2;
-static float Tr=(float)(NG+2)/2;
+#error "Use Adjoint representation."
 #else
 static float C2=(float)(NG+2)*(NG-1)/NG;
 static float Tr=(float)(NG+2)/2;

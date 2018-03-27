@@ -357,11 +357,16 @@ END
         if(($gauge_group eq "GAUGE_SPN") and (($suff eq $fundsuff) or ($rep eq "REPR_FUNDAMENTAL"))){
         
             write_spN_dagger(); 
+            write_spN_transpose(); 
             write_spN_times_spN();
             write_spN_times_spN_dagger();
             write_spN_dagger_times_spN();
             write_spN_zero();
             write_spN_unit();
+            my $olddataname = $dataname;
+            $dataname = "suNg_full";
+            write_suN_unit();
+            $dataname = $olddataname;
             write_spN_minus();
 
             write_spN_mul();
@@ -4238,6 +4243,77 @@ sub write_spN_dagger {
             print "         } \\\n";
             for(my $i=0;$i<$mrh2;$i++){
                 print "         ++_n; _complex_minus((u).$cname\[_n\],(v).$cname\[_k\]);\\\n";
+                if($i != $mrh2-1 ){ print "_k+=$N; \\\n";}
+                else { print "\\\n";}
+            }
+        }
+        print "         ++_n;\\\n";
+        print "      }\\\n";
+        print "   } while(0) \n\n";
+    }
+}
+
+
+sub write_spN_transpose {
+    print "/* u=v^T */\n";
+    print "#define _${dataname}_transpose(u,v) \\\n";
+    if ($N<$Nmax) { #unroll all 
+        my ($n,$k)=(0,0);
+        for(my $i=0;$i<$N/2;$i++){ # only N/2 rows
+            for(my $j=0;$j<$N/2;$j++){
+                $n = $i*$N +$j;
+                $k = $j*$N +$i; 
+                print "   (u).$cname\[$n\]=(v).$cname\[$k\]; \\\n";
+            }
+            for(my $j=$N/2;$j<$N;$j++){
+                $n = $i*$N +$j;
+                $k = ($j-$N/2)*$N +$i + $N/2; 
+                print "   _complex_star_minus((u).$cname\[$n\],(v).$cname\[$k\])";
+                if ($j!=$N) {$n++; $k+=$N;}
+                if($i==$N/2-1 and $j==$N-1) {print "\n\n";} else {print "; \\\n";}
+            }
+        }
+    } else { #partial unroll
+        print "   do { \\\n";
+        if($N/2<(2*$unroll)) {
+            print "      int _i,_n=0,_k;\\\n";
+        } else {
+            print "      int _i,_j,_n=0,_k;\\\n";
+        }
+        print "      for (_i=0; _i<",$N/2,"; ++_i){\\\n";
+        print "         _k=_i;(u).$cname\[_n\]=(v).$cname\[_k\];\\\n";
+        # first half line
+        if($N/2-1<2*$unroll) {
+            for(my $j=1;$j<$N/2;$j++){
+                print "         ++_n; _k+=$N; (u).$cname\[_n\]=(v).$cname\[_k\];\\\n";
+            }
+        } else {
+            print "         for (_j=1; _j<",$mdh1+1,"; ){ \\\n";
+            for(my $i=0;$i<$unroll;$i++){
+                print "            ++_n; _k+=$N; (u).$cname\[_n\]=(v).$cname\[_k\]; ++_j;\\\n";
+            }
+            print "         } \\\n";
+            for(my $i=0;$i<$mrh1;$i++){
+                print "         ++_n; _k+=$N; (u).$cname\[_n\]=(v).$cname\[_k\];\\\n";
+            }
+        }
+        print "         _k=_i+",$N/2,";\\\n";
+        # second half line
+        if($N/2<2*$unroll) {
+            for(my $j=$N/2;$j<$N;$j++){ # second half of the line
+                print "         ++_n; _complex_star_minus((u).$cname\[_n\],(v).$cname\[_k\]);";
+                if($j != $N-1 ){ print "_k+=$N; \\\n";}
+                else { print "\\\n";}
+            }
+
+        } else {
+            print "         for (_j=0; _j<$mdh2; ){ \\\n";
+            for(my $i=0;$i<$unroll;$i++){
+                print "            ++_n; _complex_star_minus((u).$cname\[_n\],(v).$cname\[_k\]); ++_j;_k+=$N;\\\n";
+            }
+            print "         } \\\n";
+            for(my $i=0;$i<$mrh2;$i++){
+                print "         ++_n; _complex_star_minus((u).$cname\[_n\],(v).$cname\[_k\]);\\\n";
                 if($i != $mrh2-1 ){ print "_k+=$N; \\\n";}
                 else { print "\\\n";}
             }

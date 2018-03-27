@@ -458,7 +458,8 @@ void test_wilson_action_and_force(double beta) {
 
    err=0.;
    _MASTER_FOR(&glattice,ix) {
-     s1=(beta/((double)NG))*(6.*NG-local_plaq(ix));
+     //s1=(beta/((double)NG))*(6.*NG-local_plaq(ix));  // CHECK
+     s1=-(beta/((double)NG))*local_plaq(ix);           // CHECK
      s2=lw_action_density(ix,beta,1.0,0.0);
      diff=fabs(s1-s2);
      if(diff>err) err=diff;

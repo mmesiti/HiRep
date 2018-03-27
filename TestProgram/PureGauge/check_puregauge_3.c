@@ -62,7 +62,7 @@ int main(int argc,char *argv[])
    /* setup random numbers */
    read_input(rlx_var.read,"test_input");
    lprintf("MAIN",0,"RLXD [%d,%d]\n",rlx_var.rlxd_level,rlx_var.rlxd_seed+MPI_PID);
-   rlxd_init(rlx_var.rlxd_level,rlx_var.rlxd_seed+MPI_PID); /* use unique MPI_PID to shift seeds */
+       rlxd_init(rlx_var.rlxd_level,rlx_var.rlxd_seed+MPI_PID); /* use unique MPI_PID to shift seeds */
 
    
    BCs_pars_t BCs_pars = {
@@ -73,8 +73,11 @@ int main(int argc,char *argv[])
      .SF_BCs = 0
    };
    init_BCs(&BCs_pars);
-
-   lprintf("MAIN",0,"Gauge group: SU(%d)\n",NG);
+#ifdef GAUGE_SUN
+   lprintf("MAIN",2,"Gauge group: SU(%d)\n",NG);
+#elif defined(GAUGE_SPN)
+   lprintf("MAIN",0,"Gauge group: SP(%d)\n",NG);
+#endif
    lprintf("MAIN",0,"global size is %dx%dx%dx%d\n",GLB_T,GLB_X,GLB_Y,GLB_Z);
    lprintf("MAIN",0,"proc grid is %dx%dx%dx%d\n",NP_T,NP_X,NP_Y,NP_Z);
 

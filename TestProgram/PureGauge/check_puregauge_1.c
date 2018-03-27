@@ -28,8 +28,11 @@ int main(int argc,char *argv[])
    suNf a,b,c,e,tmp;
    int level,seed;
    double tau;
-   
+#ifdef GAUGE_SUN   
    printf("Gauge group: SU(%d)\n",NG);
+#elif defined(GAUGE_SPN)
+   printf("Gauge group: SP(%d)\n",NG);
+#endif
    printf("Fermion representation: dim = %d\n",NF);
    printf("\n");
    
