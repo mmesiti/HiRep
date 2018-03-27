@@ -8,11 +8,11 @@ PWD=`pwd`
 shift; shift
 MACROS=$@
 
-> ${FILENAME}
+echo "// created automatically by $0 on $(date)" > ${FILENAME}
 
 
 echo -n ${MACROS} | tr '"' '@' > cinfo.tmp
-len=`cat cinfo.tmp | wc -c`+1
+len=$((`cat cinfo.tmp | wc -c`+1))
 echo -n "static char MACROS[${len}] = \"" >> ${FILENAME}
 cat cinfo.tmp >> ${FILENAME}
 echo "\";" >> ${FILENAME}
@@ -20,7 +20,7 @@ echo "" >> ${FILENAME}
 rm cinfo.tmp
 
 awk '{printf "%s\\n",$0}' ${MKDIR}/MkFlags > cinfo.tmp
-len=`cat cinfo.tmp | wc -c`+1
+len=$((`cat cinfo.tmp | wc -c`+1))
 echo -n "static char CI_mkflags[${len}] = \"" >> ${FILENAME}
 cat cinfo.tmp >> ${FILENAME}
 echo "\";" >> ${FILENAME}
@@ -33,7 +33,7 @@ then
 else
  echo -n "No CPU info\n" > cinfo.tmp
 fi
-len=`cat cinfo.tmp | wc -c`+1
+len=$((`cat cinfo.tmp | wc -c`+1))
 echo -n "static char CI_cpuinfo[${len}] = \"" >> ${FILENAME}
 cat cinfo.tmp >> ${FILENAME}
 echo "\";" >> ${FILENAME}

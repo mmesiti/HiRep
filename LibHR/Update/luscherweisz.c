@@ -444,12 +444,11 @@ void lw_force(double dt, void *vpar)
 	apply_BCs_on_momentum_field(force);
 }
 
-/*
+#ifndef NDEBUG
 void test_wilson_action_and_force(double beta) {
    double s1,s2,diff,err;
    suNg_av_field *f1,*f2;
    suNg_algebra_vector *v1, *v2;
-	mon_lw_par par;
 
    random_u(u_gauge);
    start_gf_sendrecv(u_gauge);
@@ -476,11 +475,25 @@ void test_wilson_action_and_force(double beta) {
          _algebra_vector_zero_g(*_4FIELD_AT(f2,ix,mu));
       }
    }
-   force0(1.,f1,&beta);
-	par.c0 = 1;
-	par.c1 = 0;
-	par.beta = beta;
-   lw_force(1.,f2,&par);
+   
+   {
+       force_gauge_par par;
+       par.beta = beta;
+       par.momenta = &f1;
+       par.c0 = 0;// this field of par is not used in force0 at the moment
+       par.c0 = 1;// this field of par is not used in force0 at the moment
+       force0(1.,&par);
+   }
+
+
+   {
+       force_gauge_par par;
+       par.c0 = 1;
+       par.c1 = 0;
+       par.beta = beta;
+       par.momenta = &f2;
+       lw_force(1.,&par);
+   }
 
    err=0.;
    _MASTER_FOR(&glattice,ix) {
@@ -500,7 +513,6 @@ void test_wilson_action_and_force(double beta) {
    free_avfield(f1);
    free_avfield(f2);
 }
-
 
 static void random_g(suNg_field* g)
 {
@@ -581,11 +593,6 @@ void test_gcov_lw_force(double beta, double c0, double c1) {
    suNg_algebra_vector *v1, *v2;
    double diff, err;
 
-	mon_lw_par par;
-	par.c0 = c0;
-	par.c1 = c1;
-	par.beta = beta;
-
    g=alloc_gtransf(&glattice);
    f1=alloc_avfield(&glattice);
    f2=alloc_avfield(&glattice);
@@ -599,13 +606,27 @@ void test_gcov_lw_force(double beta, double c0, double c1) {
    start_gf_sendrecv(u_gauge);
    complete_gf_sendrecv(u_gauge);
 
-   lw_force(1.,f1,&par);
+   {
+       force_gauge_par par;
+       par.c0 = c0;
+       par.c1 = c1;
+       par.beta = beta;
+       par.momenta = &f1;
+       lw_force(1.,&par);
+   }
 
    random_g(g);
    transform_force(g,f1);
    transform(g,u_gauge);
 
-   lw_force(1.,f2,&par);
+   {
+       force_gauge_par par;
+       par.c0 = c0;
+       par.c1 = c1;
+       par.beta = beta;
+       par.momenta = &f2;
+       lw_force(1.,&par);
+   }
 
    err=0.;
    _MASTER_FOR(&glattice,ix) {
@@ -640,11 +661,6 @@ void test_lw_force(double beta, double c0, double c1) {
    double err, diff;
    int x[4];
 
-	mon_lw_par par;
-	par.c0 = c0;
-	par.c1 = c1;
-	par.beta = beta;
-
    u=alloc_gfield(&glattice);
    f=alloc_avfield(&glattice);
 	_MASTER_FOR(&glattice,ix) {
@@ -658,7 +674,14 @@ void test_lw_force(double beta, double c0, double c1) {
    start_gf_sendrecv(u_gauge);
    complete_gf_sendrecv(u_gauge);
 
-   lw_force(1.,f,&par);
+   {
+       force_gauge_par par;
+       par.c0 = c0;
+       par.c1 = c1;
+       par.beta = beta;
+       par.momenta = &f;
+       lw_force(1.,&par);
+   }
 
    calculate_stfld(NOCOMM);
    _MASTER_FOR(&glattice,ix) {
@@ -725,4 +748,4 @@ void test_lw_force(double beta, double c0, double c1) {
    free_gfield(u);
    free(s);
 }
-*/
+#endif
