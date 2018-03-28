@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 #include "io.h"
 #include "random.h"
 #include "error.h"
@@ -23,7 +24,6 @@
 #include "communications.h"
 #include "logger.h"
 #include "memory.h"
-
 
 static void random_g(suNg_field* g)
 {
@@ -160,6 +160,7 @@ int main(int argc,char *argv[])
   norm=sqrt(norm/(GLB_T*GLB_X*GLB_Y*GLB_Z*4*(NG*NG-1)*2));
 
   lprintf("MAIN",0,"Mean difference (must be small): %e\n",norm);
+  assert(norm < 1e-15 );
   free_gfield(u_gauge);
   free_gfield(u_gauge_1);
   free_gfield(u_gauge_2);

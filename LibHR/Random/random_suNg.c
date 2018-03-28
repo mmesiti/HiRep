@@ -69,7 +69,11 @@ void random_suNg(suNg *u) {
   double s[4];
   suNg_vector *pu1=(suNg_vector*)(u);
 	
+#ifdef GAUGE_SPN
   _suNg_full_unit(*u);
+#else
+  _suNg_unit(*u);
+#endif
   
   for (int i=0; i<NG; ++i) {
     suNg_vector *pu2 = pu1 + 1;

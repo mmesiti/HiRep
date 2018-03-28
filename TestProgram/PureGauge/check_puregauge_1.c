@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 #include "io.h"
 #include "random.h"
 #include "error.h"
@@ -22,6 +23,10 @@
 #include "utils.h"
 
 
+static int error_compare(double x, double y){
+    const double threshold = 1.0e-13;
+    return (x < y - threshold) || (x > y + threshold);
+}
 int main(int argc,char *argv[])
 {
    suNg A,B,C,E;
@@ -49,8 +54,12 @@ int main(int argc,char *argv[])
    _suNf_sub_assign(e,tmp);
 
    _suNf_sqnorm(tau,e);
-   printf("checking that _group_represent works on E: %.3f\n",tau);
-   printf("(should be 0.00)\n");
+   printf("checking that _group_represent works on E: %.3f ",tau);
+   printf("(should be 0.00)");
+   if(error_compare(tau,0.0)){
+      printf("[ERROR]\n");
+      assert(0);
+   }else printf("[OK]\n");
    
 
    printf("Generating random matrices A and B... ");
@@ -70,8 +79,12 @@ int main(int argc,char *argv[])
    _suNf_sub_assign(c,tmp);
 
    _suNf_sqnorm(tau,c);
-   printf("checking that _group_represent is a homo: %.3f\n",tau);
-   printf("(should be 0.00)\n");
+   printf("checking that _group_represent is a homo: %.3f ",tau);
+   printf("(should be 0.00)");
    
+   if(error_compare(tau,0.0)){
+      printf("[ERROR]\n");
+      assert(0);
+   }else printf("[OK]\n");
    exit(0);
 }

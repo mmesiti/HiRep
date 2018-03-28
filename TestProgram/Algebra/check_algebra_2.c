@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 #include "io.h"
 #include "random.h"
 #include "error.h"
@@ -22,12 +23,8 @@
 #include "utils.h"
 #include "update.h"
 
-#if (NG!=3)
-#error: check_algebra_2 only works for SU(3)
-#endif
-
-#ifndef REPR_ANTISYMMETRIC
-#error: check_algebra_2 only works for 2AS representation
+#if  !defined(REPR_ANTISYMMETRIC) || ! defined(GAUGE_SUN) || (NG!=3)
+#error: check_algebra_2 only works for 2AS representation and SU(3)
 #endif
 
 
@@ -35,6 +32,10 @@
 #error: check_algebra_2 only works only on serial jobs
 #endif
 
+static int error_compare(double x, double y){
+    const double threshold = 1.0e-13;
+    return (x < y - threshold) || (x > y + threshold);
+}
 int main(int argc,char *argv[])
 {
    suNg A;
@@ -80,5 +81,12 @@ int main(int argc,char *argv[])
       printf("\n");
    }
    
+   for (i=0;i<NF;i++)
+      for (j=0;j<NF;j++)
+      {
+         assert(error_compare(a.c[i*NF+j].re,A.c[i*NF+j].re)==0);
+         assert(error_compare(-a.c[i*NF+j].im,A.c[i*NF+j].im)==0);
+      }
+
    exit(0);
 }

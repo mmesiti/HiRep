@@ -501,10 +501,18 @@ void test_wilson_action_and_force(double beta) {
       for(int mu=0; mu<4; mu++) {
          v1=_4FIELD_AT(f1,ix,mu);
          v2=_4FIELD_AT(f2,ix,mu);
+#ifdef GAUGE_SUN
          for(int i=0;i<NG*NG-1;i++) {
+#elif defined(GAUGE_SPN)
+         for(int i=0;i<NG*(NG+1)/2;i++) {
+#endif
             diff=fabs(v1->c[i]-v2->c[i]);
             if(diff>err) err=diff;
+#ifdef GAUGE_SUN
          }
+#elif defined(GAUGE_SPN)
+         }
+#endif
       }
    }
    global_max(&err,1);
@@ -635,10 +643,19 @@ void test_gcov_lw_force(double beta, double c0, double c1) {
          v1=_4FIELD_AT(f1,ix,mu);
          v2=_4FIELD_AT(f2,ix,mu);
          double loc=0.;
+#ifdef GAUGE_SUN
          for(int i=0;i<NG*NG-1;i++) {
+#elif defined(GAUGE_SPN)
+         for(int i=0;i<NG*(NG+1)/2;i++) {
+#endif
             diff=fabs(v1->c[i]-v2->c[i]);
             if(diff>err) loc=diff;
+#ifdef GAUGE_SUN
          }
+#elif defined(GAUGE_SPN)
+         }
+#endif
+ 
          if(loc>err) err=loc;
          // lprintf("TEST",0,"ix=%d mu=%d   err = %e\n",ix,mu,loc);
       }
@@ -709,7 +726,11 @@ void test_lw_force(double beta, double c0, double c1) {
 
          for(int mu=0;mu<4;mu++) {
             if(local) {
+#ifdef GAUGE_SUN
                gauss((double*)(&mom),NG*NG-1);
+#elif defined(GAUGE_SPN)
+               gauss((double*)(&mom),NG*(NG+1)/2);
+#endif
                ExpX(eps,&mom,pu_gauge(ix,mu));
             }
             start_gf_sendrecv(u_gauge);
@@ -724,9 +745,17 @@ void test_lw_force(double beta, double c0, double c1) {
 
             double Xf=0.;
             if(local) {
-               for(int i=0;i<NG*NG-1;i++) {
+#ifdef GAUGE_SUN
+         for(int i=0;i<NG*NG-1;i++) {
+#elif defined(GAUGE_SPN)
+         for(int i=0;i<NG*(NG+1)/2;i++) {
+#endif
                   Xf += _FUND_NORM2 * mom.c[i] * _4FIELD_AT(f,ix,mu)->c[i];
+#ifdef GAUGE_SUN
                }
+#elif defined(GAUGE_SPN)
+               }
+#endif
             }
             global_sum(&Xf,1);
 
