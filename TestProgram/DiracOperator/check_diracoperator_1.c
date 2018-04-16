@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
+#include <assert.h>
 #include "io.h"
 #include "update.h"
 #include "geometry.h"
@@ -26,9 +27,9 @@ static double hmass=0.1;
 static suNg_field *g;
 
 
-static void D(spinor_field *out, spinor_field *in){
-   Dphi(hmass,out,in);
-}
+//static void D(spinor_field *out, spinor_field *in){
+//   Dphi(hmass,out,in);
+//}
 
 static void random_g(void)
 {
@@ -55,7 +56,7 @@ static void transform_u(void)
 
 static void transform_s(spinor_field *out, spinor_field *in)
 {
-  _MASTER_FOR(&glattice,ix) {
+  _MASTER_FOR(&glat_even,ix) {
     suNf_spinor *s = _FIELD_AT(in,ix);
     suNf_spinor *r = _FIELD_AT(out,ix);
     suNf gfx;
@@ -125,7 +126,7 @@ int main(int argc,char *argv[])
   
   /* allocate memory */
   g=alloc_gtransf(&glattice);
-  s0=alloc_spinor_field_f(4,&glattice);
+  s0=alloc_spinor_field_f(4,&glat_even);
   s1=s0+1;
   s2=s1+1;
   s3=s2+1;
@@ -169,6 +170,7 @@ int main(int argc,char *argv[])
   
   lprintf("MAIN",0,"Maximal normalized difference = %.2e\n",sqrt(sig));
   lprintf("MAIN",0,"(should be around 1*10^(-15) or so)\n\n");
+  assert(sqrt(sig) < 1.0e-14);
   
   free_gfield(u_gauge);
 #ifndef REPR_FUNDAMENTAL

@@ -50,7 +50,7 @@ static float Tr=(float)NG;
 #ifdef REPR_ANTISYMMETRIC
 #define COMPLEX_REP
 #ifdef GAUGE_SPN
-#error "Representation is reducible."
+static float C2=(float)(NG-2)*NG*(NG+1)/(2*NG*(NG-1)-4);
 #else
 static float C2=(float)(NG-2)*(NG+1)/NG;
 #endif
@@ -225,7 +225,6 @@ int main(int argc,char *argv[])
    {
       _algebra_represent(a,f[i]);
       _suNf_times_suNf(tmp,a,a);
-      print_suNf(&tmp); //DEBUG
       _suNf_add_assign(cas,tmp);
 
 
@@ -236,7 +235,6 @@ int main(int argc,char *argv[])
 
    _suNf_unit(tmp);
    _suNf_mul(tmp,C2,tmp);
-   print_suNf(&cas); //DEBUG
    _suNf_add_assign(cas,tmp);
    _suNf_sqnorm(tau,cas);
    printf("casimir check: %.3f ",tau);

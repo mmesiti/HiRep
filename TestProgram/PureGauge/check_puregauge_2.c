@@ -25,6 +25,11 @@
 #include "logger.h"
 #include "memory.h"
 
+
+#if (NG!=2) || !defined(GAUGE_SUN)
+#error "This tests works only for SU(2)"
+#endif
+
 static void random_g(suNg_field* g)
 {
   _MASTER_FOR(&glattice,ix) {

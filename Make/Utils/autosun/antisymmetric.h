@@ -38,7 +38,11 @@ void representation::init()
 	smatrix tmp(N), tmp1(N);
 	
 	name = "ANTISYMMETRIC";
+#ifdef _GAUGE_SPN_
+	DIM = N*(N-1)/2-1;
+#else
 	DIM = N*(N-1)/2;
+#endif
 	iT = new smatrix[group::DIM];
 	e = new smatrix[DIM];
 	
@@ -46,10 +50,35 @@ void representation::init()
 	for(A = 1; A < N; A++)
 		for(B = 0; B < A; B++)
 		{
-			e[C].size = N;
-			e[C].set(A,B, complex(sqrt(.5),0.0));
+
+            e[C].size = N;
+#ifdef _GAUGE_SPN_
+            if(A == B+N/2 )
+            {// diagonal of the submatrices
+                if(B==0) continue;
+                double entry = 1.0/sqrt(2*B*(B+1));
+                for(int d = 0;d<B;++d) // diagonal
+                {
+                    e[C].set(d    ,d+N/2,complex( entry,0.0));
+                    e[C].set(d+N/2,d    ,complex(-entry,0.0));
+                }
+                // diagonal, last element 
+                // to nullify the trace of the submatrix
+                e[C].set(B    ,B+N/2,complex(-B*entry,0.0));
+                e[C].set(B+N/2,B    ,complex( B*entry,0.0));
+
+            }
+            else
+            {
+                e[C].set(A,B, complex( sqrt(.5),0.0));
+                e[C].set(B,A, complex(-sqrt(.5),0.0));
+            }
+            // case B==0 and A == N/2 is excluded.
+#else
+			e[C].set(A,B, complex( sqrt(.5),0.0));
 			e[C].set(B,A, complex(-sqrt(.5),0.0));
-			C++;
+#endif
+            C++;
 		}
 	
 	for(C = 0; C < group::DIM; C++)

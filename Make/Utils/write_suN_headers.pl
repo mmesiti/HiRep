@@ -38,10 +38,12 @@ if ($rep eq "REPR_FUNDAMENTAL") {
     }
 
 } elsif ($rep eq "REPR_ANTISYMMETRIC") {
-    $Nf=$Ng*($Ng-1)/2;
-    $c2="C";
     if ($gauge_group eq "GAUGE_SPN") {
-        die("The antisymmetric representation for SPN is reducible. Aborting.\n")
+        $Nf=$Ng*($Ng-1)/2-1;
+        $c2="C";
+    } else {
+        $Nf=$Ng*($Ng-1)/2;
+        $c2="C";
     }
 } elsif ($rep eq "REPR_ADJOINT") {
     if ($gauge_group eq "GAUGE_SPN") {

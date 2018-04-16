@@ -445,6 +445,7 @@ void lw_force(double dt, void *vpar)
 }
 
 #ifndef NDEBUG
+#include <assert.h>
 void test_wilson_action_and_force(double beta) {
    double s1,s2,diff,err;
    suNg_av_field *f1,*f2;
@@ -518,6 +519,7 @@ void test_wilson_action_and_force(double beta) {
    global_max(&err,1);
 
    lprintf("TEST",0,"beta=%f :  Error Wilson force = %e\n",beta,err);
+   assert(err < 1.0e-14);
 
    free_avfield(f1);
    free_avfield(f2);
@@ -590,6 +592,7 @@ void test_ginv_lw_action(double beta, double c0, double c1) {
    global_max(&err,1);
 
    lprintf("TEST",0,"pars=(%f,%f,%f) :  Gauge invariance LW action = %e\n",beta,c0,c1,err);
+   assert(err<1.0e-14);
 
    free(s);
    free_gtransf(g);
@@ -663,6 +666,7 @@ void test_gcov_lw_force(double beta, double c0, double c1) {
    global_max(&err,1);
 
    lprintf("TEST",0,"pars=(%f,%f,%f) :  Gauge covariance LW force = %e\n",beta,c0,c1,err);
+   assert(err<1.0e-14);
 
    free_avfield(f1);
    free_avfield(f2);
@@ -771,6 +775,8 @@ void test_lw_force(double beta, double c0, double c1) {
       }
 
       lprintf("TEST",0,"pars=(%f,%f,%f) :  Derivative of the action,  eps = %.3e     fabs(DeltaS - eps*X.force)/eps^2 = %e\n",beta,c0,c1,eps,err/eps);
+
+      assert((err/eps)<20);
 
       eps*=.1;
    }

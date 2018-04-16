@@ -92,6 +92,20 @@ struct addr_t
 
 static struct addr_t *first=NULL;
 
+#ifndef NDEBUG
+#include <stdio.h>
+static void print_all_addrs(){
+    struct addr_t* current = first;
+    int idx = 0;
+    while(current != NULL){
+        printf("%d: addr: %p true_addr: %p\n",idx,current->addr,current->true_addr);
+        current = current->next;++idx;
+    }
+}
+#endif
+
+
+
 void *amalloc(size_t size,int p)
 {
    int shift;
@@ -147,7 +161,7 @@ void afree(void *addr)
             (*q).next=(*p).next;
          else
             first=(*p).next;
-         
+
          free((*p).true_addr);
          free(p);
          return;
@@ -155,5 +169,7 @@ void afree(void *addr)
       
       q=p;
    }
+
 }
+
 
