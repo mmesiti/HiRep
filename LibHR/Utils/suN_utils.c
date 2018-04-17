@@ -92,33 +92,38 @@ void project_to_suNg(suNg *u)
   v1=(suNg_vector*)(u);
   v2=v1+1;
 #ifdef GAUGE_SPN
-  //suNg_vector *v3;
   suNg Omega;
   _symplectic(Omega);
   complex z2;
-  //v3=v1+NG/2;
   normalize(v1);
-  //_suNg_multiply(*v3,Omega,*v1);
 
-  //_vector_conjugate(*v3);
   for (i=1; i<NG/2; ++i ) {
+    suNg_vector v3;
     for (j=i; j>0; --j) {
       _vector_prod_re_g(z.re,*v1, *v2);
       _vector_prod_im_g(z.im,*v1, *v2);
       _vector_project_g(*v2, z, *v1);
-      //_vector_prod_re_g(z2.re,*v3, *v2);
-      //_vector_prod_im_g(z2.im,*v3, *v2);
-      //_vector_project_g(*v2, z2, *v3);
+      _suNg_multiply(v3,Omega,*v1);
+      _vector_conjugate(v3);
+      _vector_prod_re_g(z2.re,v3, *v2);
+      _vector_prod_im_g(z2.im,v3, *v2);
+      _vector_project_g(*v2, z2, v3);
       ++v1;
-      //++v3; 
     }
+    _suNg_multiply(v3,Omega,*v2);
+    _vector_conjugate(v3);
+    _vector_prod_re_g(z2.re,v3, *v2);
+    _vector_prod_im_g(z2.im,v3, *v2);
+    _vector_project_g(*v2, z2, v3);
+ 
     normalize(v2);
-    //_suNg_multiply(*v3,Omega,*v2);
-    //_vector_conjugate(*v3);
     ++v2;
     v1=(suNg_vector*)(u);
-    //v3 = v1+ NG/2;
   }
+
+#if !defined(NDEBUG)
+  spn_check(*u);
+#endif
 #else 
   normalize(v1);
   for (i=1; i<NG; ++i ) {
