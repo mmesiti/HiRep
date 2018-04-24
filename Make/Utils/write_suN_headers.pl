@@ -365,6 +365,7 @@ END
             write_spN_dagger_times_spN();
             write_spN_zero();
             write_spN_unit();
+            write_spN_expand();
             my $olddataname = $dataname;
             $dataname = "suNg_full";
             write_suN_unit();
@@ -4736,6 +4737,34 @@ sub write_spN_zero {
     }
 }
 
+
+sub write_spN_expand {
+    print "/* Expand a symplectic matrix into a full matrix */\n";
+    print "#define _${dataname}_expand( v, u ) \\\n";
+    my $shift=$N+1;
+    my $n=0;
+    my $m = 0;
+    my $p = 0;
+    for (my $i=0; $i<$N/2; $i++) {
+        for (my $j=0; $j<$N/2; $j++) {
+            print "   (v).$cname\[$n\].re = (u).$cname\[$n\].re;\\\n";
+            print "   (v).$cname\[$n\].im = (u).$cname\[$n\].im;\\\n";
+            $p = $N*$N/2+$n+$N/2;
+            print "   (v).$cname\[$p\].re = (u).$cname\[$n\].re;\\\n";
+            print "   (v).$cname\[$p\].im =-(u).$cname\[$n\].im;\\\n";
+            $m = $N/2+$n;
+            print "   (v).$cname\[$m\].re = (u).$cname\[$m\].re;\\\n";
+            print "   (v).$cname\[$m\].im = (u).$cname\[$m\].im;\\\n";
+            $p = $N*$N/2+$n;
+            print "   (v).$cname\[$p\].re =-(u).$cname\[$m\].re;\\\n";
+            print "   (v).$cname\[$p\].im = (u).$cname\[$m\].im;\\\n";
+            $n++;
+        }
+        $n+=$N/2;
+    }
+    print "\n";
+}
+
 sub write_spN_unit {
     print "/* u=1 */\n";
     print "#define _${dataname}_unit(u) \\\n";
@@ -4753,6 +4782,7 @@ sub write_spN_unit {
                 $n++;
             }
         }
+        print "\n";
     } else {
         print "   do { \\\n";
         print "      _${dataname}_zero((u));\\\n";

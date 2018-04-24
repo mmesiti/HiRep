@@ -156,7 +156,7 @@ static void _compute_ldl_decomp(int id)
 
 static void _compute_clover_term(int id)
 {
-	suNf tmp[6];
+	suNf tcl[6];
 	double csw;
 	double atmp_re, atmp_im;
 	double btmp_re, btmp_im;
@@ -166,12 +166,20 @@ static void _compute_clover_term(int id)
 	csw = csw_value;
 	csw = -csw/16.0;
 
-	clover_loop(id, 0, 1, &tmp[0]);
-	clover_loop(id, 0, 2, &tmp[1]);
-	clover_loop(id, 0, 3, &tmp[2]);
-	clover_loop(id, 1, 2, &tmp[3]);
-	clover_loop(id, 1, 3, &tmp[4]);
-	clover_loop(id, 2, 3, &tmp[5]);
+	clover_loop(id, 0, 1, &tcl[0]);
+	clover_loop(id, 0, 2, &tcl[1]);
+	clover_loop(id, 0, 3, &tcl[2]);
+	clover_loop(id, 1, 2, &tcl[3]);
+	clover_loop(id, 1, 3, &tcl[4]);
+	clover_loop(id, 2, 3, &tcl[5]);
+	
+#if defined(GAUGE_SPN) && defined(REPR_FUNDAMENTAL)
+	suNffull tmp[6];
+	for( int i = 0; i<6; i++)
+	  _suNg_expand( tmp[i], tcl[i] );
+#else
+  suNf *tmp = tcl;
+#endif
 
 	for(int i = 0; i < NF; i++)
 	{
@@ -210,6 +218,7 @@ static void _compute_clover_term(int id)
 			clover_im(id,3,ij) = -csw * (ctmp_im + dtmp_im);
 		}
 	}
+
 }
 
 static void _compute_clover_force(int id, double coeff)
