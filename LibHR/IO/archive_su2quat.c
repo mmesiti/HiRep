@@ -34,6 +34,23 @@
  * | c2 c3 | = | q2+i*q1  q0-i*q3 |
  */
 
+#ifdef GAUGE_SPN
+
+static void translate_su2_quat(double *q, suNg *m) {
+    q[0]=(*m).c[0].re;
+    q[1]=(*m).c[1].im;
+    q[2]=-(*m).c[1].re;
+    q[3]=(*m).c[0].im;
+}
+static void translate_quat_su2(suNg *m, double *q) {
+    (*m).c[0].re=q[0];
+    (*m).c[0].im=q[3];
+    (*m).c[1].re=-q[2];
+    (*m).c[1].im=q[1];
+}
+
+#else
+
 //#define _FAST_CONVERSION
 static void translate_su2_quat(double *q, suNg *m) {
 #ifdef _FAST_CONVERSION
@@ -58,7 +75,7 @@ static void translate_quat_su2(suNg *m, double *q) {
     (*m).c[3].re=q[0];
     (*m).c[3].im=-q[3];
 }
-
+#endif
 
 void write_gauge_field_su2q(char filename[])
 {
