@@ -110,12 +110,6 @@ void project_to_suNg(suNg *u)
       _vector_project_g(*v2, z2, v3);
       ++v1;
     }
-    _suNg_multiply(v3,Omega,*v2);
-    _vector_conjugate(v3);
-    _vector_prod_re_g(z2.re,v3, *v2);
-    _vector_prod_im_g(z2.im,v3, *v2);
-    _vector_project_g(*v2, z2, v3);
- 
     normalize(v2);
     ++v2;
     v1=(suNg_vector*)(u);
