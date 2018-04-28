@@ -55,7 +55,6 @@ static void normalize_flt(suNg_vector_flt *v)
   _vector_mul_g(*v, fact, *v);
 }
 
-
 void project_to_suNg(suNg *u)
 {
   double norm;
@@ -329,6 +328,19 @@ int project_to_suNg_real(suNg *out, suNg *in){
 }
 #endif
 
+
+#if !defined(NDEBUG)
+double unitarity_deviation(suNg sunmat){
+    suNg tmp1,identity;
+    double should_be_zero;
+    _suNg_unit(identity);
+    _suNg_times_suNg_dagger(tmp1,sunmat,sunmat);
+    _suNg_sub_assign(tmp1,identity);
+    _suNg_sqnorm(should_be_zero,tmp1);
+    return should_be_zero;
+}
+#endif
+
 #if defined(GAUGE_SPN) && !defined(NDEBUG)
 static int error_compare(double x, double y){
     const double threshold = 1.0e-13;
@@ -354,7 +366,7 @@ static void print_suNg(suNg *m){
     printf("\n");
 }
 
-void spn_check(suNg spnmat){
+double spn_deviation(suNg spnmat){
     suNg Omega,tmp1,tmp2,spntrans;
     double should_be_zero;
     _symplectic(Omega);
@@ -365,6 +377,11 @@ void spn_check(suNg spnmat){
     _suNg_sub_assign(tmp2,Omega);
 
     _suNg_sqnorm(should_be_zero,tmp2);
+    return should_be_zero;
+}
+void spn_check(suNg spnmat){
+
+    double should_be_zero = spn_deviation(spnmat);
     if(error_compare(0,should_be_zero)){
         printf("Error: matrix is not symplectic. Deviation = %f\nAborting.\n",
                 should_be_zero);
