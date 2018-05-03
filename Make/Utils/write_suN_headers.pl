@@ -368,6 +368,7 @@ END
             write_spN_expand();
             my $olddataname = $dataname;
             $dataname = "suNg_full";
+            write_spN_zero();
             write_suN_unit();
             $dataname = $olddataname;
             write_spN_minus();

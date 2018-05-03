@@ -154,6 +154,9 @@ typedef struct _ghmc_par {
 void init_ghmc(ghmc_par *par);
 void free_ghmc();
 int update_ghmc();
+#ifndef NDEBUG
+int update_ghmc_stripped();
+#endif
 
 /* stout smearing */
 void init_smearing(double, double);

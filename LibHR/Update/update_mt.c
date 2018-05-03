@@ -101,6 +101,9 @@ void free_ghmc()
 	if(u_gauge_old!=NULL) { free_gfield(u_gauge_old); u_gauge_old=NULL; }
 	if(u_scalar_old!=NULL){ free_scalar_field(u_scalar_old); u_scalar_old=NULL;}
 	if(suN_momenta!=NULL) { free_avfield(suN_momenta); suN_momenta=NULL; }
+#ifndef NDEBUG
+	if(suN_momenta_backup!=NULL) { free_avfield(suN_momenta_backup); suN_momenta_backup=NULL; }
+#endif
 	if(scalar_momenta!=NULL){ free_scalar_field(scalar_momenta); scalar_momenta=NULL;}
 	if(la!=NULL) { free_sfield(la); la=NULL; }
   
@@ -236,6 +239,78 @@ int update_ghmc()
   return 1;
 }
 
+#ifndef NDEBUG
+int update_ghmc_stripped()
+{
+  /* This function is introduced as a copy of update_ghmc without the random
+   * generations and accept/reject step (always accepting).
+   * TODO: use this function inside update_ghmc and remove 
+   * enclosing #ifndef NDEBUG /#endif
+   * */
+  double deltaH;
+
+  if(!init)
+    {
+      /* not initialized */
+      lprintf("HMC",0,"WARNING: GHMC not initialized!\nWARNNG: Ignoring call to update_ghmc.\n");
+      return -1;
+    }
+
+  /* DO NOT generate new momenta */
+  //lprintf("HMC",30,"Generating gaussian momenta and pseudofermions...\n");
+  //gaussian_momenta(suN_momenta);
+  //if(u_scalar!=NULL){
+  //    gaussian_scalar_momenta(scalar_momenta);
+  //}
+
+  /* DO NOT generate new pseudofermions */
+  //for (int i=0;i<num_mon();++i) {
+  //  const monomial *m = mon_n(i);
+  //  m->gaussian_pf(m);
+  //}
+
+  /* compute starting action */
+  lprintf("HMC",30,"Computing action density...\n");
+  local_hmc_action(NEW, la, suN_momenta, scalar_momenta);
+
+  /* correct pseudofermion distribution */
+  for (int i=0;i<num_mon();++i) {
+    const monomial *m = mon_n(i);
+    m->correct_pf(m);
+  }
+  
+
+  /* integrate molecular dynamics */
+  lprintf("HMC",30,"MD integration...\n");
+  update_par.integrator->integrator(update_par.tlen,update_par.integrator);
+
+
+  /* project and represent gauge field */
+  project_gauge_field();
+  represent_gauge_field();
+
+  /* compute new action */
+  lprintf("HMC",30,"Computing new action density...\n");
+  for (int i=0;i<num_mon();++i) {
+    const monomial *m = mon_n(i);
+    m->correct_la_pf(m);
+  }
+  local_hmc_action(DELTA, la, suN_momenta, scalar_momenta);
+
+  /* Metropolis test */
+  deltaH = 0.0;
+  _MASTER_FOR_SUM(la->type,i,deltaH) {
+    deltaH += *_FIELD_AT(la,i);
+  }
+
+  global_sum(&deltaH, 1);
+  lprintf("HMC",10,"[DeltaS = %1.8e][exp(-DS) = %1.8e]\n",deltaH,exp(-deltaH));
+
+
+  lprintf("HMC",10,"Test - Configuration accepted.\n");
+  return 1;
+}
+#endif
 
 #ifdef MEASURE_FORCEHMC
 /*Functions to check forces */

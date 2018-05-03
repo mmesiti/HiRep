@@ -1,37 +1,58 @@
-GLB_T = 8
+// Global variables 
+GLB_T = 16
 GLB_X = 8
 GLB_Y = 8
 GLB_Z = 8
 NP_T = 2
-NP_X = 2
-NP_Y = 2
-NP_Z = 2
-level = 1
-seed = 12345
-//Fermion twisting
+NP_X = 1
+NP_Y = 1
+NP_Z = 1
+
+// Replicas
+N_REP = 1
+
+// Random generator
+rlx_level = 1
+rlx_seed = 15
+rlx_start = new
+rlx_state = rand_state
+
+// Logger levels
+log:default = -1
+log:inverter = -1
+log:forcestat = 0
+
+// Fermion twisting
 theta_T = 0.
 theta_X = 0.
 theta_Y = 0.
 theta_Z = 0.
 
-// RHMC variables
-beta = 4.9
-mass = -0.8
-nf = 2
-n_pf = 2
-MT_prec = 1.e-10
-MD_prec = 1.e-10
-HB_prec = 1.e-10
-force_prec = 1.e-20
-tlen = 1
-nsteps = 2
-gsteps = 5
+// HMC variables
+tlen = 1.00
+csw = 1.2
+rho_s = 0.15
+rho_t = 0.15
 
-
+// Runtime variables
 run name = run1
-save freq = 9999
+save freq = 10000
 meas freq = 1
 conf dir = .
-gauge start = random
-//ranlxd start =
-last conf = 10
+gauge start = unit // run1_6x6x6x6nc2rADJnf2b6.000000m-0.000000n10
+last conf = 1
+
+// Monomials
+monomial {
+	id = 0
+	type = gauge
+	beta = 4.0
+	level = 0
+}
+
+// Integrators
+integrator {
+	level = 0
+	type = o2mn
+	steps = 20
+}

@@ -141,6 +141,9 @@ GLB_VAR(suNfc_field,*cl_term,=NULL);
 GLB_VAR(suNf_field,*cl_force,=NULL);
 GLB_VAR(ldl_field,*cl_ldl,=NULL);
 GLB_VAR(suNg_av_field,*suN_momenta,=NULL);
+#ifndef NDEBUG
+GLB_VAR(suNg_av_field,*suN_momenta_backup,=NULL);
+#endif
 GLB_VAR(suNg_scalar_field,*scalar_momenta,=NULL);
 GLB_VAR(int,gauge_field_active,=0); // whether gauge field interactions is active
 
