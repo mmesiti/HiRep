@@ -1,12 +1,19 @@
 #!/bin/bash
 
+TESTDIR=$(pwd)
+TOPDIR=$(dirname $(dirname $TESTDIR))
+MAKEDIR=$TOPDIR/Make
+MAKEUTILS=$MAKEDIR/Utils
+AUTOSUNDIR=$MAKEDIR/Utils/autosun
+
+
 checkN(){
     N=$1
     #Create symplectic headers
-    ../write_suN_headers.pl $N REPR_FUNDAMENTAL 0 GAUGE_SPN
+    $MAKEUTILS/write_suN_headers.pl $N REPR_FUNDAMENTAL 0 GAUGE_SPN
     mv suN.h SP.h
     mv suN_types.h SP_types.h
-    ../write_suN_headers.pl $N REPR_FUNDAMENTAL 0 SUN 
+    $MAKEUTILS/write_suN_headers.pl $N REPR_FUNDAMENTAL 0 SUN 
     mv suN.h SU$N.h
     mv suN_types.h SU$N\_types.h
  

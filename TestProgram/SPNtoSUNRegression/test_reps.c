@@ -246,7 +246,7 @@ int main(void){
 
   printf("\n");
   printf("   In the case N=2 only the adjoint representation is properly implemented.\n");
-  printf("   Antisymmetric is trivial and symmetric is equivalent to adjoint.\n");
+  printf("   Antisymmetric is trivial and (as for all even N) symmetric is equivalent to adjoint.\n");
   
 #else
 
@@ -304,9 +304,9 @@ int main(void){
   _fund_spN_algebra_represent( SPmatrix, spNalg);
   compare_suNg_SPg( suNmatrix, SPmatrix );
   
-  printf("Testing ExpX\n");
-  ExpX( 1.0, &suNalg, &suNmatrix );
-  SP_ExpX( 1.0, &spNalg, &SPmatrix);
+  printf("Testing ExpX - only at second order\n");
+  ExpX( 2.0e-4, &suNalg, &suNmatrix );
+  SP_ExpX( 2.0e-4, &spNalg, &SPmatrix);
   compare_suNg_SPg( suNmatrix, SPmatrix );
   
   free( sp_fermion_matrix );
