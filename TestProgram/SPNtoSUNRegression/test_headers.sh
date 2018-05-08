@@ -38,6 +38,7 @@ cp $MAKEDIR/MkFlags $MAKEDIR/MkFlags.bu
 restore(){
     echo 'Reverting MkFlags...'
     mv $MAKEDIR/MkFlags.bu $MAKEDIR/MkFlags
+    touch  $MAKEDIR/MkFlags
 }
 
 trap restore INT EXIT TERM
@@ -47,7 +48,7 @@ for N in 2 4 6 8  ; do
     make spnalgtest   || { echo Problem compiling spnalgtest ; exit ; }
     ./spnalgtest $N   || { echo Problem running spnalgtest ; exit ; }
   cd $TESTDIR
-  for rep in REPR_FUNDAMENTAL REPR_ADJOINT REPR_ANTISYMMETRIC; do
+  for rep in REPR_FUNDAMENTAL REPR_ADJOINT; do
   
     sed 's/REPRESENTATION/'${rep}'/' testflags  > $MAKEDIR/MkFlags
   

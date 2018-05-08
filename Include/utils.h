@@ -61,16 +61,6 @@ void det_suNg(double* res, suNg *a);
 void diag_hmat(suNg *hmat, double *dag);
 #endif
 
-#if !defined(NDEBUG)
-double unitarity_deviation(suNg sunmat);
-#endif
-
-#if defined(GAUGE_SPN) && !defined(NDEBUG)
-void spn_check(suNg spnmat);
-double spn_deviation(suNg spnmat);
-#endif
-
-
 void assign_u2ud(void);
 void assign_ud2u(void);
 void assign_ud2u_f(void);

@@ -36,37 +36,12 @@ void project_gauge_field(void)
 #endif
 #endif
   _MASTER_FOR(&glattice,ix) {
-#if !defined(NDEBUG)
-    for(int dir = 0; dir<4;++dir){
-      {
-        double tmp_unit_deviation = unitarity_deviation(*(pu_gauge(ix,dir)));
-        if(tmp_unit_deviation>max_unit_deviation) 
-          max_unit_deviation = tmp_unit_deviation;
-      }
-#if defined(GAUGE_SPN) 
-      {
-        double tmp_spn_deviation = spn_deviation(*(pu_gauge(ix,dir)));
-        if(tmp_spn_deviation>max_spn_deviation) 
-          max_spn_deviation = tmp_spn_deviation;
-      }
-#endif
-    }
-#endif
-
     project_to_suNg(pu_gauge(ix,0));
     project_to_suNg(pu_gauge(ix,1));
     project_to_suNg(pu_gauge(ix,2));
     project_to_suNg(pu_gauge(ix,3));
   }
 
-#if !defined(NDEBUG)
-  lprintf("SUN",0,"Max Unitarity deviation: %e\n",max_unit_deviation );
-#if defined(GAUGE_SPN)
-  lprintf("SPN",0,"Max SPN deviation: %e\n",max_spn_deviation );
-#endif
-#endif
-
-  
   start_gf_sendrecv(u_gauge);
 } 
 

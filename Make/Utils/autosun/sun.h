@@ -38,6 +38,8 @@ void group::init(int n){
 }
 void group::init(int n, group::group_t type, smatrix*& TOUT)
 {
+
+#ifndef NDEBUG 
     switch(type){
         case TYPESON:
             std::cerr << " Initializing group SO(" << n << ")..... ";
@@ -51,6 +53,7 @@ void group::init(int n, group::group_t type, smatrix*& TOUT)
         default:
             break;
     }
+#endif
 
     int A;
     int a, b;
@@ -212,7 +215,7 @@ string infinitesimal_evolution(const char* vname, const char* hname, const char*
     return RET;
 }
 
-#ifdef _GAUGE_SPN_
+#if defined(_GAUGE_SPN_) && defined(LUSCHER) 
 static inline void handle_subgroup(pmatrix& M, ostringstream& RET, 
         int i, int j,int k, const char* uname){
     polynomial tmp;
@@ -376,6 +379,17 @@ string ExpX(const char* dtname,  const char* hname, const char* uname)
         "\n\tfor (int i=0; i<NG*NG/2; ++i) { r->c[i].re=ut.c[i].re; r->c[i].im=ut.c[i].im; }\n";
     return RET.str();
 }
+#elif defined(_GAUGE_SPN_)
+
+string ExpX(const char* dtname,  const char* hname, const char* uname)
+{
+    ostringstream RET;
+
+    RET << "\tExpX_taylor(dt,h,r);\n";
+	
+    return RET.str();
+}
+
 #else
 string ExpX(const char* dtname,  const char* hname, const char* uname)
 {
@@ -405,8 +419,13 @@ string ExpX(const char* dtname,  const char* hname, const char* uname)
         "\tfor (int i=0; i<NG*NG; ++i) { ut.c[i].re=r->c[i]; ut.c[i].im=0.; }\n"
         "\tfor (int i=0; i<NG*NG; ++i) { ut.c[i].re=r->c[i]; ut.c[i].im=0.; }\n"
         "\tu=&ut;\n\n";
+#elif defined(_GAUGE_SPN_) // to compare with the SUN version of ExpX
+    RET <<
+        "\tsuNgfull ut, *u;\n\n"
+        "\t_suNg_expand(ut,*r);\n"
+        "\tu=&ut;\n\n";
 #endif
-
+	
     int k = 0;
     for(int j = 1; j < group::N; j++)
         for(int i = 0; i < j; i++)
@@ -441,8 +460,11 @@ string ExpX(const char* dtname,  const char* hname, const char* uname)
         }
 #ifdef _GAUGE_SON_
     RET<<"\n\tfor (int i=0; i<NG*NG; ++i) { r->c[i]=ut.c[i].re; }\n";
+#elif defined(_GAUGE_SPN_) // to compare with the SUN version of ExpX
+    RET <<
+        "\n\tfor (int i=0; i<NG*NG/2; ++i) { r->c[i].re=ut.c[i].re; r->c[i].im=ut.c[i].im; }\n";
 #endif
-
+ 
     return RET.str();
 }
 #endif
@@ -510,4 +532,7 @@ string fundamental_algebra_project(const char* hname, const char* mname)
 
     return RET;
 }
+
+
+
 #endif

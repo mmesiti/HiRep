@@ -114,9 +114,6 @@ void project_to_suNg(suNg *u)
     v1=(suNg_vector*)(u);
   }
 
-#if !defined(NDEBUG)
-  spn_check(*u);
-#endif
 #else 
   normalize(v1);
   for (i=1; i<NG; ++i ) {
@@ -329,64 +326,3 @@ int project_to_suNg_real(suNg *out, suNg *in){
 #endif
 
 
-#if !defined(NDEBUG)
-double unitarity_deviation(suNg sunmat){
-    suNg tmp1,identity;
-    double should_be_zero;
-    _suNg_unit(identity);
-    _suNg_times_suNg_dagger(tmp1,sunmat,sunmat);
-    _suNg_sub_assign(tmp1,identity);
-    _suNg_sqnorm(should_be_zero,tmp1);
-    return should_be_zero;
-}
-#endif
-
-#if defined(GAUGE_SPN) && !defined(NDEBUG)
-static int error_compare(double x, double y){
-    const double threshold = 1.0e-13;
-    return (x < y - threshold) || (x > y + threshold);
-}
-
-static void print_suNg(suNg *m){
-    int i,j;
-    double sumsq = 0;
-    double traceRe = 0;
-
-    printf("\n");
-    for(i=0;i<NG/2;++i){
-        for(j=0;j<NG;++j){
-            printf("%+-.3f,%+-.3f ", m->c[i*NG+j].re, m->c[i*NG+j].im); 
-            //printf("%+-.3f ", m->c[i*NF+j].im); 
-            sumsq += m->c[i*NG+j].im*m->c[i*NG+j].im;
-            sumsq += m->c[i*NG+j].re*m->c[i*NG+j].re;
-            if(i==j) traceRe +=m->c[i*NG+j].re;
-        }
-        printf("\n\n\n");
-    }
-    printf("\n");
-}
-
-double spn_deviation(suNg spnmat){
-    suNg Omega,tmp1,tmp2,spntrans;
-    double should_be_zero;
-    _symplectic(Omega);
-    _suNg_times_suNg(tmp1,Omega,spnmat);
-    _suNg_transpose(spntrans,spnmat);
-    _suNg_times_suNg(tmp2,spntrans,tmp1);
-
-    _suNg_sub_assign(tmp2,Omega);
-
-    _suNg_sqnorm(should_be_zero,tmp2);
-    return should_be_zero;
-}
-void spn_check(suNg spnmat){
-
-    double should_be_zero = spn_deviation(spnmat);
-    if(error_compare(0,should_be_zero)){
-        printf("Error: matrix is not symplectic. Deviation = %f\nAborting.\n",
-                should_be_zero);
-        print_suNg(&spnmat);
-        assert(0);
-    }
-}
-#endif

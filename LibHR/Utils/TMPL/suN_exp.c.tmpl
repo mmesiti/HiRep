@@ -5,6 +5,9 @@
 
 #include "suN.h"
 #include "utils.h"
+#ifdef GAUGE_SPN
+#include "suN_repr_func.h" // for ExpX_taylor
+#endif
 #include <math.h>
 
 #if (NG!=$N$) 
@@ -44,6 +47,26 @@ static void su2_rotate(double *s,complex *v1,complex *v2)
       s[0]*(*v2).im+s[1]*(*v1).re-s[2]*(*v1).im-s[3]*(*v2).re;
    (*v1)=z1;
    (*v2)=z2;
+}
+
+static inline void ExpX_taylor( double dt, suNg_algebra_vector *h, suNg *r){
+    suNg ufinal, addendum,dtiT;
+    _suNg_unit(ufinal);// u = 1
+    suNg iT;
+    _fund_algebra_represent(iT,*h);
+    _suNg_mul(dtiT,dt,iT); 
+    addendum = dtiT; // for order = 1
+    _suNg_add_assign(ufinal,addendum);// u = 1+ dt*iT
+    for(int order = 2; order != 10;++order){
+        suNg tmp;
+        // addendum[order] = 1.0/order * dtiT * addendum[order-1]
+        _suNg_times_suNg(tmp,dtiT,addendum);
+        _suNg_mul(addendum,1.0/order,tmp); 
+        _suNg_add_assign(ufinal,addendum);// u += (dt*iT)^order/order!
+    } 
+    suNg result;
+    _suNg_times_suNg(result,ufinal,*r);
+    *r = result;
 }
 
 

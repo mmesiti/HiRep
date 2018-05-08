@@ -108,9 +108,6 @@ void random_suNg(suNg *u) {
 #endif //WITH_QUATERNIONS
 #ifdef GAUGE_SPN
 	for (int i=0; i<NG*NG/2; ++i) { r->c[i].re=ut.c[i].re; r->c[i].im=ut.c[i].im; }
-#ifndef NDEBUG
-     spn_check(*r);
-#endif
 #endif
 }
 
