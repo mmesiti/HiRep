@@ -22,7 +22,7 @@ void gaussian_momenta(suNg_av_field *momenta) {
 #ifndef GAUGE_SPN
   const int ngen=NG*NG-1;
 #else
- const int ngen=NG*(NG-1)/2;
+ const int ngen=NG*(NG+1)/2;
 #endif
  
 
