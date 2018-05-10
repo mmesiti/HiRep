@@ -172,11 +172,12 @@ static void _compute_clover_term(int id)
 	clover_loop(id, 1, 2, &tcl[3]);
 	clover_loop(id, 1, 3, &tcl[4]);
 	clover_loop(id, 2, 3, &tcl[5]);
-	
+
 #if defined(GAUGE_SPN) && defined(REPR_FUNDAMENTAL)
 	suNffull tmp[6];
-	for( int i = 0; i<6; i++)
+	for( int i = 0; i<6; i++){
 	  _suNg_expand( tmp[i], tcl[i] );
+  }
 #else
   suNf *tmp = tcl;
 #endif
