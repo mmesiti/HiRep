@@ -316,13 +316,21 @@ END
             write_spN_inverse_multiply();
             if ($complex eq "R") {
                 die("SPN compressed mat-vec macros have not been written for real types.\n");
-            }        
+            }else{
+                print "#define _suNfc_multiply(a,b,c) _suNf_multiply(a,b,c)\n\n";
+                print "#define _suNfc_inverse_multiply(a,b,c) _suNf_inverse_multiply(a,b,c)\n\n";
+                print "#define _suNfc_zero(a) _suNf_zero(a)\n\n";
+            }
         } elsif ($su2quat==0) {
         
             if ($complex eq "R") {
                 write_suNr_multiply();
                 write_suNr_inverse_multiply();
-            } 
+            }else{
+                print "#define _suNfc_multiply(a,b,c) _suNf_multiply(a,b,c)\n\n";
+                print "#define _suNfc_inverse_multiply(a,b,c) _suNf_inverse_multiply(a,b,c)\n\n";
+                print "#define _suNfc_zero(a) _suNf_zero(a)\n\n";
+            }
             write_suN_multiply();
             write_suN_inverse_multiply();
             
