@@ -5,7 +5,7 @@ use strict;
 
 my ($Nmax,$unroll)=(5,4);
 my ($vd,$vr); #for vectors
-my ($vdh,$vrh); #for vectors
+my ($vdh,$vrh); #for SPN vectors
 my ($avd,$avr); #for algebra vectors
 my ($md,$mr); #for matrices
 my ($mdh1,$mrh1); #for SPN matrices, first half of row
@@ -26,7 +26,6 @@ if (!($su2quat eq "0") and $Ng!=2) {
 
 my ($Nf,$c1,$c2);
 $c1="C"; #default gauge field complex
-
 if ($rep eq "REPR_FUNDAMENTAL") {
     $Nf=$Ng;
     $c2="C";
@@ -193,7 +192,7 @@ END
         write_suN_vector();
 
         if($gauge_group eq "GAUGE_SPN"){
-        
+
             my $fulldataname = $dataname ;
             #Write the compressed SPN datatype only for gauge
             if ($rep eq "REPR_FUNDAMENTAL" or $suff eq $fundsuff)  {
@@ -204,25 +203,10 @@ END
                 #For full NxN matrix
                 $dataname.="full";
             }
-            
+
             write_suN();
             print "typedef ${dataname} ${fulldataname}_FMAT;\n\n";
             print "typedef ${dataname}_flt ${fulldataname}_FMAT_flt;\n\n";
-            
-            if ($complex eq "R") {
-                write_suNr();
-                print "typedef $rdataname ${rdataname}_FMAT;\n\n";
-                print "typedef ${rdataname}_flt ${rdataname}_FMAT_flt;\n\n";
-            } else {
-                print "typedef $dataname ${dataname}c;\n\n";
-                print "typedef ${dataname}_flt ${dataname}c_flt;\n\n";
-            }
-            
-       } elsif ($su2quat==0) {
-        
-            write_suN();
-            print "typedef $dataname ${dataname}_FMAT;\n\n";
-            print "typedef ${dataname}_flt ${dataname}_FMAT_flt;\n\n";
 
             if ($complex eq "R") {
                 write_suNr();
@@ -232,29 +216,38 @@ END
                 print "typedef $dataname ${dataname}c;\n\n";
                 print "typedef ${dataname}_flt ${dataname}c_flt;\n\n";
             }
-            
+
+        } elsif ($su2quat==0) {
+            write_suN();
+            if ($complex eq "R") {
+                write_suNr();
+                print "typedef $rdataname ${rdataname}_FMAT;\n\n";
+                print "typedef ${rdataname}_flt ${rdataname}_FMAT_flt;\n\n";
+            } else {
+                print "typedef $dataname ${dataname}c;\n\n";
+                print "typedef ${dataname}_flt ${dataname}c_flt;\n\n";
+                print "typedef $dataname ${dataname}_FMAT;\n\n";
+                print "typedef ${dataname}_flt ${dataname}_FMAT_flt;\n\n";
+            }
+
         } else {
-        
             write_su2($su2quat);
-            #print "typedef $dataname ${dataname}c;\n\n";
-            #print "typedef ${dataname}_flt ${dataname}c_flt;\n\n";
             my ($ldn,$lrdn)=($dataname,$rdataname);
-            $dataname="${dataname}_FMAT";
+            $dataname="${rdataname}c";
             $rdataname="${rdataname}_FMAT";
             write_suN();
             if ($complex eq "R") {
                 write_suNr();
             } else {
-                print "typedef $dataname ${dataname}c;\n\n";
-                print "typedef ${dataname}_flt ${dataname}c_flt;\n\n";
-            }    
+                print "typedef $dataname ${rdataname};\n\n";
+                print "typedef ${dataname}_flt ${rdataname}_flt;\n\n";
+            }
             $dataname=$ldn;
             $rdataname=$lrdn;
 
-        } 
+        }
 
         write_spinor();
-        
         if ($suff eq $fundsuff) { #algebra operations only for gauge
             if( not $gauge_group eq "GAUGE_SPN"){
                 write_suN_algebra_vector();
@@ -262,7 +255,6 @@ END
                 write_spNcomp_algebra_vector();
             }
         }
-        
 
     } else {
 
@@ -311,7 +303,7 @@ END
         write_vector_project();
 
         if(($gauge_group eq "GAUGE_SPN") and (($suff eq $fundsuff) or ($rep eq "REPR_FUNDAMENTAL"))){
-            
+
             write_spN_multiply();
             write_spN_inverse_multiply();
             if ($complex eq "R") {
@@ -322,35 +314,46 @@ END
                 print "#define _suNfc_zero(a) _suNf_zero(a)\n\n";
             }
         } elsif ($su2quat==0) {
-        
+            write_suN_multiply();
+            write_suN_inverse_multiply();
+            write_suN_zero();
             if ($complex eq "R") {
                 write_suNr_multiply();
                 write_suNr_inverse_multiply();
+                write_suNr_zero();
             }else{
                 print "#define _suNfc_multiply(a,b,c) _suNf_multiply(a,b,c)\n\n";
                 print "#define _suNfc_inverse_multiply(a,b,c) _suNf_inverse_multiply(a,b,c)\n\n";
                 print "#define _suNfc_zero(a) _suNf_zero(a)\n\n";
             }
-            write_suN_multiply();
-            write_suN_inverse_multiply();
-            
         } else {
-        
             #write_su2_decode($su2quat);
             write_su2_multiply();
             write_su2_inverse_multiply();
+            write_su2_zero();
+
+            my ($ldn,$lrdn)=($dataname,$rdataname);
+            if ($complex eq "C") {
+                $dataname="${dataname}c";
+            }
+            write_suN_multiply();
+            write_suN_inverse_multiply();
+            write_suN_zero();
+            $dataname=$ldn;
         }
 
+
+
         if ($suff eq "g") { #algebra operations only for gauge
-                write_algebra_vector_add_assign();
-                write_algebra_vector_sub_assign();
-                write_algebra_vector_mul_add_assign();
-                write_algebra_vector_mul();
-                write_algebra_vector_zero();
-                write_algebra_vector_sqnorm();
-                write_algebra_vector_prod();
-                write_spN_symplectic();
-                write_spN_vector_conj();
+            write_algebra_vector_add_assign();
+            write_algebra_vector_sub_assign();
+            write_algebra_vector_mul_add_assign();
+            write_algebra_vector_mul();
+            write_algebra_vector_zero();
+            write_algebra_vector_sqnorm();
+            write_algebra_vector_prod();
+            write_spN_symplectic();
+            write_spN_vector_conj();
         }
 
         print <<END
@@ -365,7 +368,7 @@ END
 END
         ;
         if(($gauge_group eq "GAUGE_SPN") and (($suff eq $fundsuff) or ($rep eq "REPR_FUNDAMENTAL"))){
-        
+
             write_spN_dagger(); 
             write_spN_transpose(); 
             write_spN_times_spN();
@@ -390,7 +393,7 @@ END
             write_spN_trace_re();
             write_spN_trace_im();
             write_suN_FMAT();
-            
+
             if ($complex eq "R") {
                 die("SPN compressed mat-mat macros have not been written for real types.\n");
             }
@@ -400,7 +403,7 @@ END
             write_suN_times_suN();
             write_suN_times_suN_dagger();
             write_suN_dagger_times_suN();
-            write_suN_zero();
+#write_suN_zero();
             write_suN_unit();
             write_suN_minus();
 # write_suN_copy();
@@ -417,7 +420,7 @@ END
             write_suN_FMAT();
 
             if ($complex eq "R") { # we only need these functions at the moment...
-                write_suNr_zero();
+                #write_suNr_zero();
                 write_suNr_FMAT();
                 write_suNr_unit();
                 write_suNr_dagger();
@@ -437,7 +440,7 @@ END
             write_su2_times_su2();
             write_su2_times_su2_dagger();
             write_su2_dagger_times_su2();
-            write_su2_zero();
+            #write_su2_zero();
             write_su2_unit();
             write_su2_minus();
             write_su2_mul();
@@ -1230,7 +1233,7 @@ sub write_algebra_vector_mul_add_assign {
     if ($gauge_group eq "GAUGE_SPN"){ #(N^2+N)/2 generators #DIFFERENCE
         $d=($N*$N+$N)/2;                                    #DIFFERENCE
     }                                                       #DIFFERENCE
-     if ($N<$Nmax or $d<(4*$unroll+1) ) { #unroll all 
+    if ($N<$Nmax or $d<(4*$unroll+1) ) { #unroll all 
         for(my $i=0;$i<$d;$i++){
             print "      (r).$cname\[$i\]+=(k)*(s).$cname\[$i\]";
             if($i==$d-1) { print "\n\n"; } else { print "; \\\n"; }
@@ -1288,7 +1291,7 @@ sub write_algebra_vector_zero {
     if ($gauge_group eq "GAUGE_SPN"){ #(N^2+N)/2 generators #DIFFERENCE
         $d=($N*$N+$N)/2;                                    #DIFFERENCE
     }                                                       #DIFFERENCE
-     if ($N<$Nmax or $d<(4*$unroll+1) ) { #unroll all 
+    if ($N<$Nmax or $d<(4*$unroll+1) ) { #unroll all 
         for(my $i=0;$i<$d;$i++){
             print "      (r).$cname\[$i\]=0.";
             if($i==$d-1) { print "\n\n"; } else { print "; \\\n"; }
@@ -1349,44 +1352,44 @@ sub write_algebra_vector_sqnorm {
     }
 }
 
-sub write_algebra_vector_prod {
-    print "/* k=Scalar product r*s (r,s algabra vectors)  */\n";
-    print "#define _algebra_vector_prod_${suff}(k,r,s) \\\n";
-    my $last=$N*$N-1;
-    if ($gauge_group eq "GAUGE_SPN"){ #(N^2+N)/2 generators #DIFFERENCE
-        $last=($N*$N+$N)/2;                                 #DIFFERENCE
-    }                                                       #DIFFERENCE
-    if ($N<$Nmax or $last<(4*$unroll+1) ) { #unroll all
-        print "   (k)=";
-        my $n=0;
-        for(my $i=0;$i<$last;$i++){
-            print "((r).$cname\[$i\]*(s).$cname\[$i\])";
-            $n+=$N+1;
-            if($i==$last-1) { print "\n\n"; } else { print "+ \\\n       "; }
-        }
-    } else { #partial unroll                                          
-        print "   do { \\\n";
-        print "      int _i,_n=0;\\\n";
-        print "      (k)=0.;\\\n";
-        print "      for (_i=0; _i<$avd; ){\\\n";
-        print "         (k)+=";
-        my $n=2*$unroll;
-        for(my $i=0;$i<2*$unroll;$i++){
-            if ($i==0) { print "((r).$cname\[_i\]*(s).$cname\[_i\])"; }
-            else { print "((r).$cname\[_i+$i\]*(s).$cname\[_i+$i\])"; }
-            if($i==2*$unroll-1) { print ";\\\n"; } else { print "+ \\\n              "; }
-        }
-        print "         _i+=$n;\\\n";
-        print "      }\\\n";
-        print "      (k)+=" unless ($avr==0);
-        for(my $i=0;$i<$avr;$i++){
-            if ($i==0) { print "((r).$cname\[_i\]*(s).$cname\[_i\])"; }
-            else { print "((r).$cname\[_i+$i\]*(s).$cname\[_i+$i\])"; }
-            if($i==$avr-1) { print ";\\\n"; } else { print "+ \\\n           "; }
-        }
-        print "   } while(0) \n\n";
-    }
-}
+sub write_algebra_vector_prod {  #
+    print "/* k=Scalar product r*s (r,s algabra vectors)  */\n";  #
+    print "#define _algebra_vector_prod_${suff}(k,r,s) \\\n";  #
+    my $last=$N*$N-1;  #
+    if ($gauge_group eq "GAUGE_SPN"){ #(N^2+N)/2 generators   #
+        $last=($N*$N+$N)/2;                                   #
+    }                                                         #
+    if ($N<$Nmax or $last<(4*$unroll+1) ) { #unroll all  #
+        print "   (k)=";  #
+        my $n=0;  #
+        for(my $i=0;$i<$last;$i++){  #
+            print "((r).$cname\[$i\]*(s).$cname\[$i\])";  #
+            $n+=$N+1;  #
+            if($i==$last-1) { print "\n\n"; } else { print "+ \\\n       "; }  #
+        }  #
+    } else { #partial unroll                                            #
+        print "   do { \\\n";  #
+        print "      int _i,_n=0;\\\n";  #
+        print "      (k)=0.;\\\n";  #
+        print "      for (_i=0; _i<$avd; ){\\\n";  #
+        print "         (k)+=";  #
+        my $n=2*$unroll;  #
+        for(my $i=0;$i<2*$unroll;$i++){  #
+            if ($i==0) { print "((r).$cname\[_i\]*(s).$cname\[_i\])"; }  #
+            else { print "((r).$cname\[_i+$i\]*(s).$cname\[_i+$i\])"; }  #
+            if($i==2*$unroll-1) { print ";\\\n"; } else { print "+ \\\n              "; }  #
+        }  #
+        print "         _i+=$n;\\\n";  #
+        print "      }\\\n";  #
+        print "      (k)+=" unless ($avr==0);  #
+        for(my $i=0;$i<$avr;$i++){  #
+            if ($i==0) { print "((r).$cname\[_i\]*(s).$cname\[_i\])"; }  #
+            else { print "((r).$cname\[_i+$i\]*(s).$cname\[_i+$i\])"; }  #
+            if($i==$avr-1) { print ";\\\n"; } else { print "+ \\\n           "; }  #
+        }  #
+        print "   } while(0) \n\n";  #
+    }  #
+}  #
 
 sub write_vector_lc {
     print "/* r=k1*s1+k2*s2 (k1,k2 real, s1,s2 vectors) */\n";
@@ -1541,14 +1544,14 @@ sub write_suN_multiply {
         }
     } else { #partial unroll
         print "   do { \\\n";
-        print "      int _i,_j,_k=0;for (_i=0; _i<$N; ++_i){\\\n";
-        print "         _complex_mul((r).$cname\[_i\],(u).$cname\[_k\],(s).$cname\[0\]); ++_k; _j=1;\\\n";
+        print "      int _i,_k=0;for (_i=0; _i<$N; ++_i){\\\n";
+        print "         _complex_mul((r).$cname\[_i\],(u).$cname\[_k\],(s).$cname\[0\]); ++_k;\\\n";
         if($N<(2*$unroll+1)) {
             for(my $j=1;$j<$N;$j++){
                 print "         _complex_mul_assign((r).$cname\[_i\],(u).$cname\[_k\],(s).$cname\[$j\]); ++_k;\\\n";
             }
         } else {
-            print "         for (; _j<",$md+1,"; ){ \\\n";
+            print "         int _j=1; for (; _j<$md; ){ \\\n";
             for(my $i=0;$i<$unroll;$i++){
                 print "            _complex_mul_assign((r).$cname\[_i\],(u).$cname\[_k\],(s).$cname\[_j\]); ++_k; ++_j;\\\n";
             }
@@ -1579,14 +1582,14 @@ sub write_suNr_multiply {
         }
     } else { #partial unroll
         print "   do { \\\n";
-        print "      int _i,_j,_k=0;for (_i=0; _i<$N; ++_i){\\\n";
-        print "         _complex_mulr((r).$cname\[_i\],(u).$cname\[_k\],(s).$cname\[0\]); ++_k; _j=1;\\\n";
+        print "      int _i,_k=0;for (_i=0; _i<$N; ++_i){\\\n";
+        print "         _complex_mulr((r).$cname\[_i\],(u).$cname\[_k\],(s).$cname\[0\]); ++_k;\\\n";
         if($N<(2*$unroll+1)) {
             for(my $j=1;$j<$N;$j++){
                 print "         _complex_mulr_assign((r).$cname\[_i\],(u).$cname\[_k\],(s).$cname\[$j\]); ++_k;\\\n";
             }
         } else {
-            print "         for (; _j<",$md+1,"; ){ \\\n";
+            print "         int _j=1; for (; _j<$md; ){ \\\n";
             for(my $i=0;$i<$unroll;$i++){
                 print "            _complex_mulr_assign((r).$cname\[_i\],(u).$cname\[_k\],(s).$cname\[_j\]); ++_k; ++_j;\\\n";
             }
@@ -1756,14 +1759,14 @@ sub write_suN_inverse_multiply {
         }
     } else { #partial unroll
         print "   do { \\\n";
-        print "      int _i,_j,_k=0;for (_i=0; _i<$N; ++_i){\\\n";
-        print "         _complex_mul_star((r).$cname\[_i\],(s).$cname\[0\],(u).$cname\[_k\]); _j=1;\\\n";
+        print "      int _i,_k=0;for (_i=0; _i<$N; ++_i){\\\n";
+        print "         _complex_mul_star((r).$cname\[_i\],(s).$cname\[0\],(u).$cname\[_k\]);\\\n";
         if($N<(2*$unroll+1)) {
             for(my $j=1;$j<$N;$j++){
                 print "         _k+=$N; _complex_mul_star_assign((r).$cname\[_i\],(s).$cname\[$j\],(u).$cname\[_k\]);\\\n";
             }
         } else {
-            print "         for (; _j<",$md+1,"; ){ \\\n";
+            print "         int _j=1; for (; _j<$md; ){ \\\n";
             for(my $i=0;$i<$unroll;$i++){
                 print "            _k+=$N; _complex_mul_star_assign((r).$cname\[_i\],(s).$cname\[_j\],(u).$cname\[_k\]); ++_j;\\\n";
             }
@@ -1796,14 +1799,14 @@ sub write_suNr_inverse_multiply {
         }
     } else { #partial unroll
         print "   do { \\\n";
-        print "      int _i,_j,_k=0;for (_i=0; _i<$N; ++_i){\\\n";
-        print "         _complex_mulr((r).$cname\[_i\],(u).$cname\[_k\],(s).$cname\[0\]); _j=1;\\\n";
+        print "      int _i,_k=0;for (_i=0; _i<$N; ++_i){\\\n";
+        print "         _complex_mulr((r).$cname\[_i\],(u).$cname\[_k\],(s).$cname\[0\]);\\\n";
         if($N<(2*$unroll+1)) {
             for(my $j=1;$j<$N;$j++){
                 print "         _k+=$N; _complex_mulr_assign((r).$cname\[_i\],(u).$cname\[_k\],(s).$cname\[$j\]);\\\n";
             }
         } else {
-            print "         for (; _j<",$md+1,"; ){ \\\n";
+            print "         int _j=1; for (; _j<$md; ){ \\\n";
             for(my $i=0;$i<$unroll;$i++){
                 print "            _k+=$N; _complex_mulr_assign((r).$cname\[_i\],(u).$cname\[_k\],(s).$cname\[_j\]); ++_j;\\\n";
             }
@@ -1850,7 +1853,7 @@ sub write_suN_dagger {
                 print "         ++_n; _k+=$N; _complex_star((u).$cname\[_n\],(v).$cname\[_k\]);\\\n";
             }
         } else {
-            print "         for (_j=1; _j<",$md+1,"; ){ \\\n";
+            print "         for (_j=0; _j<$md; ){ \\\n";
             for(my $i=0;$i<$unroll;$i++){
                 print "            ++_n; _k+=$N; _complex_star((u).$cname\[_n\],(v).$cname\[_k\]); ++_j;\\\n";
             }
@@ -1894,7 +1897,7 @@ sub write_suNr_dagger {
                 print "         ++_n; _k+=$N; (u).$cname\[_n\]=(v).$cname\[_k\];\\\n";
             }
         } else {
-            print "         for (_j=0; _j<",$md+1,"; ){ \\\n";
+            print "         for (_j=0; _j<$md; ){ \\\n";
             for(my $i=0;$i<$unroll;$i++){
                 print "            ++_n; _k+=$N; (u).$cname\[_n\]=(v).$cname\[_k\]; ++_j;\\\n";
             }
@@ -1948,7 +1951,7 @@ sub write_suN_times_suN {
                 print "            ++_k; _l+=$N; _complex_mul_assign((u).$cname\[_n\],(v).$cname\[_k\],(w).$cname\[_l\]);\\\n";
             }
         } else {
-            print "            for (_j=1; _j<",$md+1,"; ){ \\\n";
+            print "            for (_j=0; _j<$md; ){ \\\n";
             for(my $i=0;$i<$unroll;$i++){
                 print "               ++_k; _l+=$N; _complex_mul_assign((u).$cname\[_n\],(v).$cname\[_k\],(w).$cname\[_l\]); ++_j;\\\n";
             }
@@ -2001,7 +2004,7 @@ sub write_suNr_times_suNr {
                 print "            ++_k; _l+=$N; (u).$cname\[_n\]+=(v).$cname\[_k\]*(w).$cname\[_l\];\\\n";
             }
         } else {
-            print "            for (_j=1; _j<",$md+1,"; ){ \\\n";
+            print "            for (_j=0; _j<$md; ){ \\\n";
             for(my $i=0;$i<$unroll;$i++){
                 print "               ++_k; _l+=$N; (u).$cname\[_n\]+=(v).$cname\[_k\]*(w).$cname\[_l\]; ++_j;\\\n";
             }
@@ -2054,7 +2057,7 @@ sub write_suN_times_suN_dagger {
                 print "            ++_k; ++_l; _complex_mul_star_assign((u).$cname\[_n\],(v).$cname\[_k\],(w).$cname\[_l\]);\\\n";
             }
         } else {
-            print "            for (_j=1; _j<",$md+1,"; ){ \\\n";
+            print "            for (_j=0; _j<$md; ){ \\\n";
             for(my $i=0;$i<$unroll;$i++){
                 print "               ++_k; ++_l; _complex_mul_star_assign((u).$cname\[_n\],(v).$cname\[_k\],(w).$cname\[_l\]); ++_j;\\\n";
             }
@@ -2108,7 +2111,7 @@ sub write_suN_dagger_times_suN {
                 print "            _k+=$N; _l+=$N; _complex_mul_star_assign((u).$cname\[_n\],(w).$cname\[_k\],(v).$cname\[_l\]);\\\n";
             }
         } else {
-            print "            for (_j=1; _j<",$md+1,"; ){ \\\n";
+            print "            for (_j=0; _j<$md; ){ \\\n";
             for(my $i=0;$i<$unroll;$i++){
                 print "               _k+=$N; _l+=$N; _complex_mul_star_assign((u).$cname\[_n\],(w).$cname\[_k\],(v).$cname\[_l\]); ++_j;\\\n";
             }
@@ -2161,7 +2164,7 @@ sub write_suNr_times_suNr_dagger {
                 print "            ++_k; ++_l; (u).$cname\[_n\]+=(v).$cname\[_k\]*(w).$cname\[_l\];\\\n";
             }
         } else {
-            print "            for (_j=1; _j<",$md+1,"; ){ \\\n";
+            print "            for (_j=0; _j<$md; ){ \\\n";
             for(my $i=0;$i<$unroll;$i++){
                 print "               ++_k; ++_l; (u).$cname\[_n\]+=(v).$cname\[_k\]*(w).$cname\[_l\]; ++_j;\\\n";
             }
@@ -2209,13 +2212,13 @@ sub write_suNr_dagger_times_suNr {
         print "      for (_i=0; _i<$N; ++_i){\\\n";
         print "         for (_y=0; _y<$N; ++_y){\\\n";
         print "            _k=_y; _l=_i;\\\n";
-        print "            (u).$cname\[_n\]=(w).$cname\[_k\]*(v).$cname\[_l\]);\\\n";
+        print "            (u).$cname\[_n\]=(w).$cname\[_k\]*(v).$cname\[_l\];\\\n";
         if($N<(2*$unroll+1)) {
             for(my $j=1;$j<$N;$j++){
                 print "            _k+=$N; _l+=$N; (u).$cname\[_n\]+=(w).$cname\[_k\]*(v).$cname\[_l\];\\\n";
             }
         } else {
-            print "            for (_j=1; _j<",$md+1,"; ){ \\\n";
+            print "            for (_j=0; _j<$md; ){ \\\n";
             for(my $i=0;$i<$unroll;$i++){
                 print "               _k+=$N; _l+=$N; (u).$cname\[_n\]+=(w).$cname\[_k\]*(v).$cname\[_l\]; ++_j;\\\n";
             }
@@ -4673,7 +4676,7 @@ sub write_spN_dagger_times_spN {
                 if($i!=$mrh2-1){ print "_k+=$N; _l+=$N; \\\n";}
             }
         }
- 
+
         print "            ++_n;\\\n";
         print "         }\\\n";
         print "         for (_y=",$N/2,"; _y<$N; ++_y){\\\n"; # right half
@@ -4717,7 +4720,7 @@ sub write_spN_dagger_times_spN {
 
         print "            ++_n;\\\n";
         print "         }\\\n";
- 
+
         print "      }\\\n";
         print "   } while(0) \n\n";
     }
@@ -5057,7 +5060,7 @@ sub write_spN_symplectic {
                 else {print ";\\\n";}
             }else{
                 print "   _complex_0((u).c[$k]);\\\n";
-           }
+            }
         }
     }
 }
@@ -5066,11 +5069,11 @@ sub write_spN_vector_conj {
     print "/* u = u* */\n";
     print "#define _vector_conjugate(u) \\\n";
     for(my $i=0;$i<$N;$i++){
-       print "    _complex_star_assign((u).c[$i])";
-       if($i == $N-1 ) { print "\n\n";}
-       else {print ";\\\n";}
+        print "    _complex_star_assign((u).c[$i])";
+        if($i == $N-1 ) { print "\n\n";}
+        else {print ";\\\n";}
     }
-    
+
 }
 
 
