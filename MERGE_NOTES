@@ -99,3 +99,217 @@ WilsonFlow/WF_measure.c
 WilsonFlow/WF_measure_adaptative.c
 * Copied as is from the SPN version - only lprintf modifications.
 
+##############################################################################
+#                                SECOND ROUND                                #
+# comparison between the current state of the code and the initial state of  #
+# the repo (just taken from the SVN repo)                                    #
+##############################################################################
+
+Notes: 
+  Changes are intended new minus old
+
+./RenormalizationFactors/measure_Z_mom.c
+  2 lines added, #elif GAUGE_SPN and a lprintf.
+
+./Include/global.h
+ For debug and testing, added a global var *suN_momenta_backup
+
+./Include/complex.h
+ Added new macros for SPN
+
+./Include/memory.h
+  Added some logic to differentiate between the SPN FUNDAMENTAL case and the 
+  others, for clover fermions.
+
+./Include/spinor_field.h
+ Declaring a new struct, suNffull_field.
+
+./Include/update.h
+ Declared a update_ghmc_stripped function for testing.
+
+./Include/utils.h
+ Only a blank line removed.
+
+./Make/Utils/autosun/fundamental.h
+ Header guards added, an ifdef for the GAUGE_SPN case added.
+ 'RET +=' changed to 'RET =' (is an empty string before this assignment).
+
+./Make/Utils/autosun/polynomial.h
+ Header guards and proper includes added.
+
+./Make/Utils/autosun/sparse.h
+ Header guards and proper includes added.
+ Added cerr.
+
+./Make/Utils/autosun/sun.h
+ Header guards and proper includes added.
+ refactored init function, added overloaded version, #ifdefs for the gauge 
+ group, replaced an ifdef for gauge group with a switch.
+ The SPN portion of the code in group::init has been added between the SON and 
+ the SUN case.
+ Another exponential for the spn case has been implemented (luscher and taylor 
+ methods).
+ This part of the code has been tested extensively.
+ 
+./Make/Utils/autosun/matrix.h
+ Header guards and proper includes added.
+ New class - spmatrix - added, new method for class smatrix created.
+ 
+./Make/Utils/autosun/complex.h
+ Header guards and proper includes added.
+ Removed CR where it was added.
+
+./Make/Utils/autosun/adjoint.h
+ Header guards and proper includes added. some #ifdefs for the gauge group.
+ Use of spmatrix in lieu of cmatrix for the SPN case.
+
+./Make/Utils/autosun/symmetric.h
+ Header guards and proper includes added. some #ifdefs for the gauge group.
+ Use of spmatrix in lieu of cmatrix for the SPN case. (as above)
+
+
+
+./Make/Utils/autosun/representation.h
+ Header guards and proper includes added. some #ifdefs for the gauge group.
+ Proper includes also depend on the group of choice.
+ 
+./Make/Utils/autosun/antisymmetric.h
+ Header guards and proper includes added. some #ifdefs for the gauge group.
+ Antisymmetric representation for SPN is constructed in a different way from
+ the symmetric one.
+ Use of spmatrix in lieu of cmatrix for the SPN case. (as above)
+
+./Make/Utils/autosun/list.h
+ Header guards and proper includes added. 
+
+./Converter/archive_eolexi.c
+ Preprocessor directives for switching between SPN and SUN
+
+./HMC/hmc_forces.c
+ Preprocessor directives for switching between SPN and SUN, affecting only lprintf.
+
+./HMC/hmc.c
+ Preprocessor directives for switching between SPN and SUN, affecting only lprintf.
+ (as above).
+
+./WilsonFlow/WF_measure.c
+ Preprocessor directives for switching between SPN and SUN, affecting only lprintf.
+ (as above, 2).
+
+./WilsonFlow/WF_measure_adaptative.c
+ Preprocessor directives for switching between SPN and SUN, affecting only lprintf.
+ (as above, 3).
+
+./LibHR/Memory/amalloc.c
+ Added a debug/printing function.
+
+./LibHR/Memory/field_alloc.c
+ Declared memory-related functions for the new type suNffull_field, for SPN.
+ Wrapped in Macro logic.
+
+./LibHR/Update/random_momenta.c
+ ngen depends now on the gauge group (defined as the ratio
+ sizeof(suNg_algebra_vector)/sizeof(double)).
+
+./LibHR/Update/representation.c
+ For spn _group_represent2 is only a wrapper to _group_represent.
+ Wrapped in Macro logic.
+
+./LibHR/Update/update_mt.c
+ Created function update_ghmc_stripped, which is like update_ghmc but without 
+ initialization and metropolis tests.
+
+./LibHR/Update/luscherweisz.c
+ A big amount of code originally commented out has been revived. Changes are 
+ only in the revived, originally-commented out portion of the code.
+
+./LibHR/Update/cabmar.c
+ Machinery for SPN added. Note: not all su2 subgroup in SPN are taken care of.
+ Note: in our version the random_su2 call on line 103 was commented out.
+       de-commented it.
+
+./LibHR/Update/clover_tools.c
+ #ifdef for the SPN, FUNDAMENTAL case, to use suNffull matrix.
+
+./LibHR/Utils/inv_suNg.c
+ #ifdef for the SPN, FUNDAMENTAL case, to use suNffull matrix.
+
+./LibHR/Utils/det_suNg.c
+ #ifdef for the SPN, FUNDAMENTAL case, to use suNffull matrix.
+
+./LibHR/Utils/suN_utils.c
+ #ifdef for the SPN, adapted the projection algorithm (modified
+   stabilized Gram-Schmidt)
+
+./LibHR/Utils/HYP_smearing.c
+ Project_cooling_to_suNg is not suitable for spn. Modified preprocessor logic
+ to take care of this.
+
+./LibHR/Utils/boundary_conditions.c
+ Added some #ifdefs 
+
+./LibHR/IO/logger.c
+ Some initializations to NULL added
+
+./LibHR/IO/archive_su2quat.c
+ Added preprocessor directives to choose between SPN and SUN
+
+./LibHR/Random/random_suNg.c
+ Added preprocessor directives to choose between SPN and SUN.
+ Implemented SPN case.
+  
+./Spectrum/measure_spectrum.c
+ Preprocessor directives for switching between SPN and SUN, affecting only lprintf.
+./Spectrum/measure_formfactor.c
+ Preprocessor directives for switching between SPN and SUN, affecting only lprintf.
+./Spectrum/mk_mesons_with_z2semwall_new.c
+ Preprocessor directives for switching between SPN and SUN, affecting only lprintf.
+
+# TEST PROGRAMS (NOT CRUCIAL)
+./TestProgram/Deflate/check_deflate.c
+  2 lines added, #elif GAUGE_SPN and a lprintf (as above).
+
+./TestProgram/DiracOperator/check_diracoperator_1.c
+  Assertion added, commented a wrong function out, glat_even used in place of
+  glattice.
+
+./TestProgram/Propagator/check_propagator.c
+  2 lines added, #elif GAUGE_SPN and a lprintf (as above).
+
+./TestProgram/Update/check_update_1.c
+  A lot of changes. Now test works as intended. 
+  No need to comment further since modification on this file have no 
+  consequences elsewhere.
+
+./TestProgram/Algebra/check_algebra_1.c
+  Added some print functions, modifications specific for the SPN case
+  No need to comment further since modification on this file have no 
+  consequences elsewhere.
+
+
+./TestProgram/Algebra/check_algebra_2.c
+  Added some assertions, a function, refactored macro.
+  No need to comment further since modification on this file have no 
+  consequences elsewhere.
+
+
+./TestProgram/PureGauge/check_puregauge_3.c
+  2 lines added, #elif GAUGE_SPN and a lprintf (as above).
+  No need to comment further since modification on this file have no 
+  consequences elsewhere.
+
+
+./TestProgram/PureGauge/check_puregauge_2.c
+  2 lines added, #elif GAUGE_SPN and a lprintf (as above), 
+  #error added (test does not work for SPN).
+  No need to comment further since modification on this file have no 
+  consequences elsewhere.
+
+
+./TestProgram/PureGauge/check_puregauge_1.c
+  assertions and a error check function added.
+  2 lines added, #elif GAUGE_SPN and a lprintf (as above), 
+  No need to comment further since modification on this file have no 
+  consequences elsewhere.
+
+
