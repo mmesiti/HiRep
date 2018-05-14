@@ -198,68 +198,44 @@ public:
    We actually build a complete matrix here using the elements of a symplectic one. */
 class spmatrix : public pmatrix
 {
+private: 
+    void _spinit(int N,const char* name){
+		for(int i = 0; i < N/2; i++)
+			for(int j = 0; j < N; j++)
+			{
+				ostringstream elem;
+				elem << name << mindex(i,j,size);
+				cvariable tmp(elem.str().c_str());
+				set(i,j, tmp);
+			}
+		for(int i = 0; i < N/2; i++)
+			for(int j = 0; j < N/2; j++)
+			{
+				ostringstream elem;
+				elem << name << mindex(i,j+N/2,size);
+				cvariable tmp(elem.str().c_str());
+				tmp.conjugate();
+				tmp.minus();
+				set(i+N/2,j, tmp);
+			}
+		for(int i = 0; i < N/2; i++)
+			for(int j = 0; j < N/2; j++)
+			{
+				ostringstream elem;
+				elem << name << mindex(i,j,size);
+				cvariable tmp(elem.str().c_str());
+				tmp.conjugate();
+				set(i+N/2,j+N/2, tmp);
+			}
+    }
 public:
-	spmatrix(int N, const string& name) : pmatrix(N)
-	{
-		for(int i = 0; i < N/2; i++)
-			for(int j = 0; j < N; j++)
-			{
-				ostringstream elem;
-				elem << name << mindex(i,j,size);
-				cvariable tmp(elem.str().c_str());
-				set(i,j, tmp);
-			}
-	   for(int i = 0; i < N/2; i++)
-			for(int j = 0; j < N/2; j++)
-			{
-				ostringstream elem;
-				elem << name << mindex(i,j+N/2,size);
-				cvariable tmp(elem.str().c_str());
-				tmp.conjugate();
-				tmp.minus();
-				set(i+N/2,j, tmp);
-			}
-		for(int i = 0; i < N/2; i++)
-			for(int j = 0; j < N/2; j++)
-			{
-				ostringstream elem;
-				elem << name << mindex(i,j,size);
-				cvariable tmp(elem.str().c_str());
-				tmp.conjugate();
-				set(i+N/2,j+N/2, tmp);
-			}
+	spmatrix(int N, const string& name) : pmatrix(N){
+        _spinit(N,name.c_str());
 	}
-	spmatrix(int N, char* name) : pmatrix(N)
-	{
-		for(int i = 0; i < N/2; i++)
-			for(int j = 0; j < N; j++)
-			{
-				ostringstream elem;
-				elem << name << mindex(i,j,size);
-				cvariable tmp(elem.str().c_str());
-				set(i,j, tmp);
-			}
-		for(int i = 0; i < N/2; i++)
-			for(int j = 0; j < N/2; j++)
-			{
-				ostringstream elem;
-				elem << name << mindex(i,j+N/2,size);
-				cvariable tmp(elem.str().c_str());
-				tmp.conjugate();
-				tmp.minus();
-				set(i+N/2,j, tmp);
-			}
-		for(int i = 0; i < N/2; i++)
-			for(int j = 0; j < N/2; j++)
-			{
-				ostringstream elem;
-				elem << name << mindex(i,j,size);
-				cvariable tmp(elem.str().c_str());
-				tmp.conjugate();
-				set(i+N/2,j+N/2, tmp);
-			}
-	}
-	
+	spmatrix(int N, char* name) : pmatrix(N){
+        _spinit(N,name);
+    }
+		
 	using pmatrix::operator=;
 };
 

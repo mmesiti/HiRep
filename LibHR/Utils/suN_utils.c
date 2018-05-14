@@ -14,7 +14,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <assert.h>
 #include "utils.h"
 #include "suN.h"
 #include "representation.h"
@@ -54,6 +53,7 @@ static void normalize_flt(suNg_vector_flt *v)
   fact=1.0f/sqrtf(fact);
   _vector_mul_g(*v, fact, *v);
 }
+
 
 void project_to_suNg(suNg *u)
 {
@@ -324,5 +324,3 @@ int project_to_suNg_real(suNg *out, suNg *in){
   return 1;
 }
 #endif
-
-

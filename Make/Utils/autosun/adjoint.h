@@ -4,15 +4,16 @@
 
 namespace representation
 {
+	int DIM;
 	const int PHI_FLAVORS = 2;
 	typedef FLOATING TYPE;
-	
-	int DIM;
+
 	smatrix* iT;
 	string name;
 	FLOATING iTnorm;
+
 	static smatrix* e;
-	
+
 	void init();
 };
 
@@ -37,7 +38,9 @@ void representation::init()
 #ifdef _GAUGE_SON
         DIM = N*(N-1)/2;
 #elif _GAUGE_SPN_
-   /* We use the generators of the symplectic group here. The adjoint of the symplectic group is irreducible whereas the representation built with the generators of SU(N) would not be. */
+   /* We use the generators of the symplectic group here. 
+    * The adjoint of the symplectic group is irreducible whereas 
+    * the representation built with the generators of SU(N) would not be. */
    DIM = (N*N+N)/2;
 #else
 	DIM = N*N-1;
@@ -83,14 +86,14 @@ void representation::init()
 string group_represent(const char* vname, const char* uname)
 {
 	string RET;
-	pmatrix adjU(group::N);
-	pmatrix rU(representation::DIM);
-	pmatrix *Ue;
 #ifdef _GAUGE_SPN_
 	spmatrix U(group::N,uname);
 #else
 	cmatrix U(group::N,uname);
 #endif
+	pmatrix adjU(group::N);
+	pmatrix rU(representation::DIM);
+	pmatrix *Ue;
     
         Ue = new pmatrix[representation::DIM];
 	

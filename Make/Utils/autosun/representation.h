@@ -4,14 +4,18 @@
 #include "./complex.h"
 #include "./matrix.h"
 #include "./sun.h"
+#ifdef _REPR_FUNDAMENTAL_
+#include "fundamental.h"
+#elif _REPR_ADJOINT_
+#include "adjoint.h"
+#elif _REPR_ANTISYMMETRIC_
+#include "antisymmetric.h"
+#elif _REPR_SYMMETRIC_
+#include "symmetric.h"
+#endif
+
 
 using namespace std;
-
-namespace representation
-{
-
-};
-
 
 string group_represent(const char* vname, const char* uname);
 string algebra_represent(const char* mname, const char* hname);

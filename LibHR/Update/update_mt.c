@@ -101,9 +101,6 @@ void free_ghmc()
 	if(u_gauge_old!=NULL) { free_gfield(u_gauge_old); u_gauge_old=NULL; }
 	if(u_scalar_old!=NULL){ free_scalar_field(u_scalar_old); u_scalar_old=NULL;}
 	if(suN_momenta!=NULL) { free_avfield(suN_momenta); suN_momenta=NULL; }
-#ifndef NDEBUG
-	if(suN_momenta_backup!=NULL) { free_avfield(suN_momenta_backup); suN_momenta_backup=NULL; }
-#endif
 	if(scalar_momenta!=NULL){ free_scalar_field(scalar_momenta); scalar_momenta=NULL;}
 	if(la!=NULL) { free_sfield(la); la=NULL; }
   

@@ -50,16 +50,8 @@ static void rotate(suNg_vector *pu1, suNg_vector *pu2, double s[4]) /* same as i
 #ifdef GAUGE_SPN
 void random_suNg(suNg *r) {
   suNgfull ut, *u;
-
-	for (int i=0; i<NG*NG/2; ++i) { ut.c[i].re=r->c[i].re; ut.c[i].im=r->c[i].im; }
-	for (int i=0; i<NG/2; ++i) {
-		for (int j=0; j<NG/2; ++j) {
-			int ind = NG*i+j;
-			ut.c[NG*NG/2+NG/2+ind].re=r->c[ind].re; ut.c[NG*NG/2+NG/2+ind].im=-r->c[ind].im;
-			ut.c[NG*NG/2+ind].re=-r->c[ind+NG/2].re; ut.c[NG*NG/2+ind].im=r->c[ind+NG/2].im;
-		}
-	}
-	u=&ut;
+  _suNg_expand(ut,*r);
+  u=&ut;
 #else
 void random_suNg(suNg *u) {
 #endif

@@ -104,8 +104,6 @@ static void print_all_addrs(){
 }
 #endif
 
-
-
 void *amalloc(size_t size,int p)
 {
    int shift;

@@ -7,16 +7,17 @@ using namespace std;
 
 namespace representation
 {
+	int DIM;
 	const int PHI_FLAVORS = 4;
-   typedef complex TYPE;
-   
-  	int DIM;
-   smatrix* iT;
+    typedef complex TYPE;
+
+    smatrix* iT;
 	string name;
 	FLOATING iTnorm;
+
 	static smatrix* e;
-   
-  void init();
+
+    void init();
 };
 
 
@@ -109,15 +110,15 @@ void representation::init()
 string group_represent(const char* vname, const char* uname)
 {
 	string RET;
-	pmatrix trU(group::N);
-	pmatrix rU(representation::DIM);
-	pmatrix *Ue;
 #ifdef _GAUGE_SPN_
 	spmatrix U(group::N,uname);
 #else
 	cmatrix U(group::N,uname);
 #endif
-    
+	pmatrix trU(group::N);
+	pmatrix rU(representation::DIM);
+	pmatrix *Ue;
+
     Ue = new pmatrix[representation::DIM];
 	
 	trU = U;

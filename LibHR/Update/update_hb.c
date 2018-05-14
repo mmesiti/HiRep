@@ -19,9 +19,6 @@
 #include "update.h"
 #include "communications.h"
 #define PI 3.141592653589793238462643383279502884197
-#if defined(GAUGE_SPN) && !defined(NDEBUG)
-#include "logger.h"
-#endif
 #include <math.h>
 #include <stdlib.h>
 
@@ -29,12 +26,6 @@ static int *dyn_gauge=NULL;
 
 void project_gauge_field(void)
 {
-#if !defined(NDEBUG)
-  double max_unit_deviation = 0.;
-#if defined(GAUGE_SPN) 
-  double max_spn_deviation = 0.;
-#endif
-#endif
   _MASTER_FOR(&glattice,ix) {
     project_to_suNg(pu_gauge(ix,0));
     project_to_suNg(pu_gauge(ix,1));

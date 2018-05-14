@@ -372,7 +372,6 @@ public:
 
 template<class INDEX, class VALUE> orderedlist<INDEX,VALUE>::~orderedlist<INDEX,VALUE>()
 {
-
 	for(KEYTYPE i = 0; i < length; i++)
 		delete data[i];
 	if(length != 0) delete[] data;

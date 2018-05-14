@@ -37,10 +37,10 @@ static inline void rotate(suNg_vector *pu1, suNg_vector *pu2, double *s)
   cu2 = &((*pu2).c[0]);
   
   for (i=0; i<NG; ++i) {
-    z1.re = s[0]*(*cu1).re - s[1]*(*cu2).im + s[2]*(*cu2).re - s[3]*(*cu1).im;
-    z1.im = s[0]*(*cu1).im + s[1]*(*cu2).re + s[2]*(*cu2).im + s[3]*(*cu1).re;
-    z2.re = s[0]*(*cu2).re - s[1]*(*cu1).im - s[2]*(*cu1).re + s[3]*(*cu2).im;
-    z2.im = s[0]*(*cu2).im + s[1]*(*cu1).re - s[2]*(*cu1).im - s[3]*(*cu2).re;
+    z1.re=s[0]*(*cu1).re-s[1]*(*cu2).im+s[2]*(*cu2).re-s[3]*(*cu1).im;
+    z1.im=s[0]*(*cu1).im+s[1]*(*cu2).re+s[2]*(*cu2).im+s[3]*(*cu1).re;
+    z2.re=s[0]*(*cu2).re-s[1]*(*cu1).im-s[2]*(*cu1).re+s[3]*(*cu2).im;
+    z2.im=s[0]*(*cu2).im+s[1]*(*cu1).re-s[2]*(*cu1).im-s[3]*(*cu2).re;
     (*cu1) = z1;
     (*cu2) = z2;
     ++cu1;
@@ -51,16 +51,16 @@ static inline void rotate(suNg_vector *pu1, suNg_vector *pu2, double *s)
 static inline void wmatrix(suNg_vector *pu1, suNg_vector *pu2, suNg_vector *pv1, suNg_vector *pv2, double *w)
 {
 	double prod1,prod2;
-        _vector_prod_re_g(prod1,*pu1,*pv1);
+  _vector_prod_re_g(prod1,*pu1,*pv1);
 	_vector_prod_re_g(prod2,*pu2,*pv2);
 	w[0] = prod1+prod2;
-        _vector_prod_im_g(prod1,*pu1,*pv2);
+  _vector_prod_im_g(prod1,*pu1,*pv2);
 	_vector_prod_im_g(prod2,*pu2,*pv1);
 	w[1] = prod1+prod2;
-        _vector_prod_re_g(prod1,*pu2,*pv1);
+  _vector_prod_re_g(prod1,*pu2,*pv1);
 	_vector_prod_re_g(prod2,*pu1,*pv2);
 	w[2] = prod1-prod2;
-        _vector_prod_im_g(prod1,*pu1,*pv1);
+  _vector_prod_im_g(prod1,*pu1,*pv1);
 	_vector_prod_im_g(prod2,*pu2,*pv2);
 	w[3] = prod1-prod2;
 }
@@ -103,7 +103,7 @@ void cabmar(double beta,suNg *u,suNg *v,int type)
       _suNg_times_suNg(*u,r,*v);
 			_suNg_mul(*u,fact,*u);
 		}
-	} else ;//random_su2(0.0,&(u->c[0]));
+	} else random_su2(0.0,&(u->c[0]));
 	
   
 #else
@@ -146,8 +146,8 @@ void cabmar(double beta,suNg *u,suNg *v,int type)
           s[3]=fact*(r[3]*w[0]+r[0]*w[3]-r[1]*w[2]+r[2]*w[1]);
         }
       } else random_su2(0.0,s);
-     
-	   rotate(pu1,pu2,s);
+
+	  rotate(pu1,pu2,s);
       
       ++pu2; ++pv2;
     }
@@ -207,7 +207,7 @@ void cabmar(double beta,suNg *u,suNg *v,int type)
     for (j=i+1; j<NG/2; ++j) {
       wmatrix(pu1, pu2, pv1, pv2, w);
       wtos( s, w, b, 2.0, type);
-		rotate(pu1, pu2, s);
+      rotate(pu1, pu2, s);
       ++pu2; ++pv2;
     }
     
@@ -221,7 +221,7 @@ void cabmar(double beta,suNg *u,suNg *v,int type)
 	 pu2 = &u2; pv2 = &v2;
 	 
 	 wmatrix(pu1, pu2, pv1, pv2, w);
-    wtos( s, w, b, 1.0, type);
+     wtos( s, w, b, 1.0, type);
 	 rotate(pu1,pu2,s) ;
 
     ++pu1; ++pv1;

@@ -219,7 +219,6 @@ static void _compute_clover_term(int id)
 			clover_im(id,3,ij) = -csw * (ctmp_im + dtmp_im);
 		}
 	}
-
 }
 
 static void _compute_clover_force(int id, double coeff)

@@ -217,7 +217,6 @@ void read_gauge_field_eolexi_BE(char filename[])
 #else
       }
 #endif
-
     }
     free(eolexi_field);
   }

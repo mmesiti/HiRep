@@ -215,7 +215,7 @@ string infinitesimal_evolution(const char* vname, const char* hname, const char*
     return RET;
 }
 
-#if defined(_GAUGE_SPN_) && defined(LUSCHER) 
+#if defined(_GAUGE_SPN_) && !defined(TAYLOR) 
 static inline void handle_subgroup(pmatrix& M, ostringstream& RET, 
         int i, int j,int k, const char* uname){
     polynomial tmp;

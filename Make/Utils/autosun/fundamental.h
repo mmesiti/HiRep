@@ -6,15 +6,14 @@
 using namespace std;
 namespace representation
 {
+	int DIM;
 	const int PHI_FLAVORS = 4;
 	typedef complex TYPE;
-	
-	int DIM;
+
 	smatrix* iT;
 	string name;
 	FLOATING iTnorm;
-	static smatrix* e;
-	
+
 	void init();
 };
 
@@ -57,7 +56,7 @@ string group_represent(const char* vname, const char* uname)
 {
 	string RET;
 	cmatrix U(group::N,uname);
-	
+
 #ifndef _GAUGE_SPN_	
 	RET = U.assignment("=", vname);
 #else
