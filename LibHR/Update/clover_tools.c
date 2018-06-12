@@ -176,7 +176,7 @@ static void _compute_clover_term(int id)
 #if defined(GAUGE_SPN) && defined(REPR_FUNDAMENTAL)
 	suNffull tmp[6];
 	for( int i = 0; i<6; i++){
-	  _suNg_expand( tmp[i], tcl[i] );
+	  _suNf_expand( tmp[i], tcl[i] );
   }
 #else
   suNf *tmp = tcl;

@@ -278,6 +278,21 @@ void apply_BCs_on_spinor_field_flt(spinor_field_flt *sp) {
 #endif
 }
 
+
+#if defined(GAUGE_SPN) && defined(REPR_FUNDAMENTAL)
+
+#ifdef BC_T_OPEN
+static void cl_open_BCs(suNffull_field*);
+#endif
+
+void apply_BCs_on_clover_term(suNffull_field *cl) {
+#ifdef BC_T_OPEN
+	cl_open_BCs(cl);
+#endif
+}
+
+#else
+
 #ifdef BC_T_OPEN
 static void cl_open_BCs(suNfc_field*);
 #endif
@@ -287,6 +302,8 @@ void apply_BCs_on_clover_term(suNfc_field *cl) {
 	cl_open_BCs(cl);
 #endif
 }
+
+#endif
 
 
 /***************************************************************************/
@@ -728,7 +745,11 @@ static void mf_open_BCs(suNg_av_field *force) {
 /***************************************************************************/
 
 #ifdef BC_T_OPEN
+#if defined(GAUGE_SPN) && defined(REPR_FUNDAMENTAL)
+static void cl_open_BCs(suNffull_field *cl)
+#else
 static void cl_open_BCs(suNfc_field *cl)
+#endif
 {
 	int index;
 	suNfc u;

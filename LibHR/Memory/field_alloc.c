@@ -1,6 +1,6 @@
 /***************************************************************************\
-* Copyright (c) 2008, Claudio Pica                                          *   
-* All rights reserved.                                                      * 
+* Copyright (c) 2008, Claudio Pica                                          *
+* All rights reserved.                                                      *
 \***************************************************************************/
 
 /*******************************************************************************
@@ -126,9 +126,11 @@ _DECLARE_MEMORY_FUNC(avfield, suNg_av_field, 4);
 _DECLARE_MEMORY_FUNC(gtransf, suNg_field, 1);
 
 _DECLARE_MEMORY_FUNC(clover_ldl, ldl_field, 1);
+
 #if defined(GAUGE_SPN) && defined(REPR_FUNDAMENTAL)
 _DECLARE_MEMORY_FUNC(clover_term, suNffull_field, 4);
+_DECLARE_MEMORY_FUNC(clover_force, suNffull_field, 6);
 #else
 _DECLARE_MEMORY_FUNC(clover_term, suNfc_field, 4);
-#endif
 _DECLARE_MEMORY_FUNC(clover_force, suNf_field, 6);
+#endif

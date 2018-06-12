@@ -1,6 +1,6 @@
 /***************************************************************************\
-* Copyright (c) 2008, Claudio Pica                                          *   
-* All rights reserved.                                                      * 
+* Copyright (c) 2008, Claudio Pica                                          *
+* All rights reserved.                                                      *
 \***************************************************************************/
 
 /*******************************************************************************
@@ -30,7 +30,7 @@ static void normalize(double *v)
 {
   double fact=0;
   int i;
-  for (i=0;i<NG; ++i){fact+=v[i]*v[i];} 
+  for (i=0;i<NG; ++i){fact+=v[i]*v[i];}
   fact = 1.0/sqrt(fact);
   for (i=0;i<NG; ++i){v[i]*=fact;}
 }
@@ -77,12 +77,12 @@ void project_to_suNg(suNg *u)
   }
 #else
 #ifdef WITH_QUATERNIONS
-	
+
   _suNg_sqnorm(norm,*u);
   norm=sqrt(0.5*norm);
   norm=1./norm;
   _suNg_mul(*u,norm,*u);
-  
+
 #else
   int i,j;
   suNg_vector *v1,*v2;
@@ -114,7 +114,7 @@ void project_to_suNg(suNg *u)
     v1=(suNg_vector*)(u);
   }
 
-#else 
+#else
   normalize(v1);
   for (i=1; i<NG; ++i ) {
     for (j=i; j>0; --j) {
@@ -154,21 +154,21 @@ void project_to_suNg_flt(suNg_flt *u)
   }
 #else
 #ifdef WITH_QUATERNIONS
-	
+
   _suNg_sqnorm(norm,*u);
   norm=sqrtf(0.5f*norm);
   norm=1.f/norm;
   _suNg_mul(*u,norm,*u);
 
 #else
-  
+
   int i,j;
   suNg_vector_flt *v1,*v2;
   complex_flt z;
 
   v1=(suNg_vector_flt*)(u);
   v2=v1+1;
-   
+
   normalize_flt(v1);
   for (i=1; i<NG; ++i ) {
     for (j=i; j>0; --j) {
@@ -186,7 +186,7 @@ void project_to_suNg_flt(suNg_flt *u)
 }
 
 
-#ifndef GAUGE_SON
+#if !(defined GAUGE_SON || defined GAUGE_SPN)
 void project_cooling_to_suNg(suNg* g_out, suNg* g_in, int cooling)
 {
 #ifdef WITH_QUATERNIONS
@@ -201,24 +201,24 @@ void project_cooling_to_suNg(suNg* g_out, suNg* g_in, int cooling)
   double norm;
 
   Ug[0]=*g_in;
-  
-      
-  for (j=0; j<NG; j++){					
+
+
+  for (j=0; j<NG; j++){
     c[j]=0.0;
 
-    for (i=0; i<NG; i++){					
+    for (i=0; i<NG; i++){
       _complex_0(f[1]);
-      
+
       for (k=0; k<j; k++){
 	_complex_0(f[0]);
-	
+
 	for (l=0; l<NG; l++){
-	  _complex_mul_star_assign(f[0],(Ug[0]).c[l*NG+j], (Ug[1]).c[l*NG+k]); 
+	  _complex_mul_star_assign(f[0],(Ug[0]).c[l*NG+j], (Ug[1]).c[l*NG+k]);
 	}
 	_complex_mulcr_assign(f[1],c[k],(Ug[1]).c[i*NG+k],f[0]);
 
       }
-      
+
       _complex_sub(Ug[1].c[i*NG+j],Ug[0].c[i*NG+j],f[1]);
       _complex_mul_star_assign_re(c[j],Ug[1].c[i*NG+j],Ug[1].c[i*NG+j]);
 
@@ -233,53 +233,53 @@ void project_cooling_to_suNg(suNg* g_out, suNg* g_in, int cooling)
       for(j=0;j<NG;j++){
 	_complex_mul_star_assign_re(norm,Ug[1].c[i+NG*j],Ug[1].c[i+NG*j]);
       }
-      
+
       for(j=0;j<NG;j++){
 	_complex_mulr(Ug[1].c[i+NG*j],1.0/sqrt(norm),Ug[1].c[i+NG*j]);
-	
+
       }
     }
 
-  
-  
+
+
   _suNg_dagger(Ug[2],*g_in);
- 
-  for (ncool=0; ncool<cooling; ncool++) 
+
+  for (ncool=0; ncool<cooling; ncool++)
     {
-      
+
       _suNg_times_suNg(Ug[0],Ug[2],Ug[1]);
-      
+
       for (i=0; i<NG; i++) {
 	for (j=i+1; j<NG; j++) {
-	  
+
 	  _complex_add_star(f[0],Ug[0].c[i+NG*i],Ug[0].c[j+NG*j]);
 	  _complex_sub_star(f[1],Ug[0].c[j+NG*i],Ug[0].c[i+NG*j]);
-	  
+
 	  norm = 1.0/sqrt( _complex_prod_re(f[0],f[0]) + _complex_prod_re(f[1],f[1]) );
-	  
+
 	  _complex_mulr(f[0],norm,f[0]);
 	  _complex_mulr(f[1],norm,f[1]);
-	  
+
 	  _suNg_unit(tmp[0]);
-	  
+
 	  _complex_star(tmp[0].c[i+NG*i],f[0]);
 	  _complex_star(tmp[0].c[i+NG*j],f[1]);
 	  tmp[0].c[j+NG*j]=f[0];
 	  _complex_minus(tmp[0].c[j+NG*i],f[1]);
-	  
-	  
-	  
+
+
+
 	  _suNg_times_suNg(tmp[1],Ug[1],tmp[0]);
 	  Ug[1]=tmp[1];
-	  
+
 	  _suNg_times_suNg(tmp[1],Ug[0],tmp[0]);
 	  Ug[0]=tmp[1];
-	  
+
 	}
       }
     }
-  
-  *g_out = Ug[1]; 
+
+  *g_out = Ug[1];
 #endif
 }
 #endif
@@ -305,7 +305,7 @@ int project_to_suNg_real(suNg *out, suNg *in){
   _suNg_times_suNg_dagger(om,tmp,hm);
   _suNg_times_suNg(tmp,om,*in);
   *out=tmp;
-  //Fix the determinant 
+  //Fix the determinant
   det_suNg(&det,&tmp);
   /*  if (fabs(det)<1-1e-7 || fabs(det)>1+1e-7){
       lprintf("suNg_utils",10,"Error in project project_to_suNg_real: determinant not +/-1. It is %1.8g\n",det);
@@ -314,7 +314,7 @@ int project_to_suNg_real(suNg *out, suNg *in){
   for (i=0;i<NG;++i){
     out->c[i]*=1./det;
   }
-    
+
   tmp = *out;
   det_suNg(&det,&tmp);
   if (det<1-1e-7 || det>1+1e-7){

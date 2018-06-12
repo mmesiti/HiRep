@@ -27,7 +27,7 @@
  * two components; then we multiply these two vectors by U(x,mu) and
  * store the result in p.c[0], p.c[1]; when computing the trace we can factorize p.c[0] and p.c[1]
  * as they both multiply two components of chi1^+; we store these factors in p.c[2] and p.c[3].
- * the tensor product is performed by the macro 
+ * the tensor product is performed by the macro
  * _suNf_FMAT(u,p): u = p.c[0] # p.c[2]^+ + p.c[1] # p.c[3]^+
  */
 
@@ -276,10 +276,10 @@ static void g5_sigma(suNf_spinor *s, suNf_spinor *u, int mu, int nu)
 	}
 }
 
-static suNf fmat_create(suNf_spinor *a_lhs, suNf_spinor *a_rhs, suNf_spinor *b_lhs, suNf_spinor *b_rhs)
+static suNffull fmat_create(suNf_spinor *a_lhs, suNf_spinor *a_rhs, suNf_spinor *b_lhs, suNf_spinor *b_rhs)
 {
-	suNf fmat;
-	_suNf_zero(fmat);
+	suNffull fmat;
+	_suNffull_zero(fmat);
 	for(int i = 0; i < NF; i++)
 	{
 		for(int j = 0; j < NF; j++)
@@ -322,8 +322,9 @@ static void force_clover_core(double dt)
 
 		_SITE_FOR(&glattice,xp,ix)
 		{
-			suNf *Z[6], W[9];
-			suNf s1, s2, s3, fmat;
+      suNf Wg[9];
+      suNffull W[9], *Z[6];
+			suNffull s1, s2, s3, fmat;
 			suNg_algebra_vector f;
 			int num, sign;
 
@@ -332,7 +333,7 @@ static void force_clover_core(double dt)
 				for(int nu = 0; nu < 4; nu++)
 				{
 					if(mu == nu) continue;
-					
+
 					// Coordinates
 					int o1 = iup(ix,mu); // x + mu
 					int o2 = iup(ix,nu); // x + nu
@@ -360,35 +361,40 @@ static void force_clover_core(double dt)
 					Z[5] = _6FIELD_AT(cl_force,o2,num);
 
 					// Construct links
-					_suNf_dagger(W[0], *pu_gauge_f(o3,mu));
-					W[1] = *pu_gauge_f(o3,nu);
-					W[2] = *pu_gauge_f(o1,nu);
-					_suNf_dagger(W[3], *pu_gauge_f(o2,mu));
-					_suNf_dagger(W[4], *pu_gauge_f(ix,nu));
-					_suNf_dagger(W[5], *pu_gauge_f(o4,nu));
-					_suNf_times_suNf(W[6], W[0], W[1]);
-					_suNf_times_suNf(W[7], W[2], W[3]);
-					_suNf_times_suNf(s1, W[5], W[6]);
-					_suNf_times_suNf(W[8], W[7], W[4]);
-					_suNf_sub_assign(W[8], s1);
+					_suNf_dagger(Wg[0], *pu_gauge_f(o3,mu));
+					Wg[1] = *pu_gauge_f(o3,nu);
+					Wg[2] = *pu_gauge_f(o1,nu);
+					_suNf_dagger(Wg[3], *pu_gauge_f(o2,mu));
+					_suNf_dagger(Wg[4], *pu_gauge_f(ix,nu));
+					_suNf_dagger(Wg[5], *pu_gauge_f(o4,nu));
+					_suNf_times_suNf(Wg[6], Wg[0], Wg[1]);
+					_suNf_times_suNf(Wg[7], Wg[2], Wg[3]);
+					_suNf_times_suNf(s1, Wg[5], Wg[6]);
+					_suNf_times_suNf(Wg[8], Wg[7], Wg[4]);
+					_suNf_sub_assign(Wg[8], s1);
+
+          for(int i=0; i<9; i++){
+            _suNf_expand(W[i],Wg[i])
+          }
 
 					// Calculate sum of forces
-					_suNf_times_suNf(fmat, W[8], *Z[0]);
-					_suNf_times_suNf(s1, *Z[1], W[8]);
-					_suNf_add_assign(fmat, s1);
-					_suNf_times_suNf(s1, W[0], *Z[2]);
-					_suNf_times_suNf(s2, s1, W[1]);
-					_suNf_times_suNf(s3, *Z[3], W[6]);
-					_suNf_add_assign(s2, s3);
-					_suNf_times_suNf(s1, W[5], s2);
-					_suNf_sub_assign(fmat, s1);
-					_suNf_times_suNf(s1, W[2], *Z[4]);
-					_suNf_times_suNf(s2, s1, W[3]);
-					_suNf_times_suNf(s3, W[7], *Z[5]);
-					_suNf_add_assign(s2, s3);
-					_suNf_times_suNf(s1, s2, W[4]);
-					_suNf_add_assign(fmat, s1);
-					_suNf_times_suNf(s1, *pu_gauge_f(ix,mu), fmat);
+					_suNffull_times_suNffull(fmat, W[8], *Z[0]);
+					_suNffull_times_suNffull(s1, *Z[1], W[8]);
+					_suNffull_add_assign(fmat, s1);
+					_suNffull_times_suNffull(s1, W[0], *Z[2]);
+					_suNffull_times_suNffull(s2, s1, W[1]);
+					_suNffull_times_suNffull(s3, *Z[3], W[6]);
+					_suNffull_add_assign(s2, s3);
+					_suNffull_times_suNffull(s1, W[5], s2);
+					_suNffull_sub_assign(fmat, s1);
+					_suNffull_times_suNffull(s1, W[2], *Z[4]);
+					_suNffull_times_suNffull(s2, s1, W[3]);
+					_suNffull_times_suNffull(s3, W[7], *Z[5]);
+					_suNffull_add_assign(s2, s3);
+					_suNffull_times_suNffull(s1, s2, W[4]);
+					_suNffull_add_assign(fmat, s1);
+          _suNf_expand(s2,*pu_gauge_f(ix,mu))
+					_suNffull_times_suNffull(s1, s2, fmat);
 
 					// Project on force
 					_algebra_project(f,s1);
@@ -406,7 +412,7 @@ void force_clover_fermion(spinor_field* Xs, spinor_field* Ys, double residue)
 	{
 		suNf_spinor tmp_lhs, tmp_rhs;
 		suNf_spinor *rhs, *lhs;
-		suNf *fm, fm_tmp;
+		suNffull *fm, fm_tmp;
 
 		// (mu,nu) = (0,1)
 		rhs = _FIELD_AT(Xs, ix);
@@ -415,8 +421,8 @@ void force_clover_fermion(spinor_field* Xs, spinor_field* Ys, double residue)
 		g5_sigma(&tmp_rhs, rhs, 0, 1);
 		g5_sigma(&tmp_lhs, lhs, 0, 1);
 		fm_tmp = fmat_create(&tmp_lhs, rhs, &tmp_rhs, lhs);
-		_suNf_mul(fm_tmp, residue, fm_tmp);
-		_suNf_add_assign(*fm, fm_tmp);
+		_suNffull_mul(fm_tmp, residue, fm_tmp);
+		_suNffull_add_assign(*fm, fm_tmp);
 
 		// (mu,nu) = (0,2)
 		rhs = _FIELD_AT(Xs, ix);
@@ -425,8 +431,8 @@ void force_clover_fermion(spinor_field* Xs, spinor_field* Ys, double residue)
 		g5_sigma(&tmp_rhs, rhs, 0, 2);
 		g5_sigma(&tmp_lhs, lhs, 0, 2);
 		fm_tmp = fmat_create(&tmp_lhs, rhs, &tmp_rhs, lhs);
-		_suNf_mul(fm_tmp, residue, fm_tmp);
-		_suNf_add_assign(*fm, fm_tmp);
+		_suNffull_mul(fm_tmp, residue, fm_tmp);
+		_suNffull_add_assign(*fm, fm_tmp);
 
 		// (mu,nu) = (1,2)
 		rhs = _FIELD_AT(Xs, ix);
@@ -435,9 +441,9 @@ void force_clover_fermion(spinor_field* Xs, spinor_field* Ys, double residue)
 		g5_sigma(&tmp_rhs, rhs, 1, 2);
 		g5_sigma(&tmp_lhs, lhs, 1, 2);
 		fm_tmp = fmat_create(&tmp_lhs, rhs, &tmp_rhs, lhs);
-		_suNf_mul(fm_tmp, residue, fm_tmp);
-		_suNf_add_assign(*fm, fm_tmp);
-	
+		_suNffull_mul(fm_tmp, residue, fm_tmp);
+		_suNffull_add_assign(*fm, fm_tmp);
+
 		// (mu,nu) = (0,3)
 		rhs = _FIELD_AT(Xs, ix);
 		lhs = _FIELD_AT(Ys, ix);
@@ -445,8 +451,8 @@ void force_clover_fermion(spinor_field* Xs, spinor_field* Ys, double residue)
 		g5_sigma(&tmp_rhs, rhs, 0, 3);
 		g5_sigma(&tmp_lhs, lhs, 0, 3);
 		fm_tmp = fmat_create(&tmp_lhs, rhs, &tmp_rhs, lhs);
-		_suNf_mul(fm_tmp, residue, fm_tmp);
-		_suNf_add_assign(*fm, fm_tmp);
+		_suNffull_mul(fm_tmp, residue, fm_tmp);
+		_suNffull_add_assign(*fm, fm_tmp);
 
 		// (mu,nu) = (1,3)
 		rhs = _FIELD_AT(Xs, ix);
@@ -455,8 +461,8 @@ void force_clover_fermion(spinor_field* Xs, spinor_field* Ys, double residue)
 		g5_sigma(&tmp_rhs, rhs, 1, 3);
 		g5_sigma(&tmp_lhs, lhs, 1, 3);
 		fm_tmp = fmat_create(&tmp_lhs, rhs, &tmp_rhs, lhs);
-		_suNf_mul(fm_tmp, residue, fm_tmp);
-		_suNf_add_assign(*fm, fm_tmp);
+		_suNffull_mul(fm_tmp, residue, fm_tmp);
+		_suNffull_add_assign(*fm, fm_tmp);
 
 		// (mu,nu) = (2,3)
 		rhs = _FIELD_AT(Xs, ix);
@@ -465,8 +471,8 @@ void force_clover_fermion(spinor_field* Xs, spinor_field* Ys, double residue)
 		g5_sigma(&tmp_rhs, rhs, 2, 3);
 		g5_sigma(&tmp_lhs, lhs, 2, 3);
 		fm_tmp = fmat_create(&tmp_lhs, rhs, &tmp_rhs, lhs);
-		_suNf_mul(fm_tmp, residue, fm_tmp);
-		_suNf_add_assign(*fm, fm_tmp);
+		_suNffull_mul(fm_tmp, residue, fm_tmp);
+		_suNffull_add_assign(*fm, fm_tmp);
 	}
 }
 
@@ -640,7 +646,11 @@ void fermion_force_begin()
 	{
 		for(int mu = 0; mu < 6; mu++)
 		{
-			_suNf_zero(*_6FIELD_AT(cl_force,ix,mu));
+      #if defined(GAUGE_SPN) && defined(REPR_FUNDAMENTAL)
+			_suNf_FMAT_zero(*_6FIELD_AT(cl_force,ix,mu));
+      #else
+      _suNf_zero(*_6FIELD_AT(cl_force,ix,mu));
+      #endif
 		}
 	}
 

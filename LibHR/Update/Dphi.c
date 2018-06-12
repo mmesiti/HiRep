@@ -1,13 +1,13 @@
 /***************************************************************************\
-* Copyright (c) 2008, Claudio Pica                                          *   
-* All rights reserved.                                                      * 
+* Copyright (c) 2008, Claudio Pica                                          *
+* All rights reserved.                                                      *
 \***************************************************************************/
 
 /*******************************************************************************
 *
 * File Dphi.c
 *
-* Action of the Wilson-Dirac operator D and hermitian g5D on a given 
+* Action of the Wilson-Dirac operator D and hermitian g5D on a given
 * double-precision spinor field
 *
 *******************************************************************************/
@@ -83,7 +83,7 @@ unsigned long int getMVM() {
 #define _suNf_theta_T_multiply(r,u,s)\
     _suNf_multiply(vtmp,(u),(s));\
     _vector_mulc_f((r),eitheta[0],vtmp)
-    
+
 #define _suNf_theta_T_inverse_multiply(r,u,s)\
     _suNf_inverse_multiply(vtmp,(u),(s));\
     _vector_mulc_star_f((r),eitheta[0],vtmp)
@@ -154,7 +154,7 @@ _vector_mulc_star_f((r),eitheta[3],vtmp)
 
 /*
  * This function defines the massless Dirac operator
- * It can act on spinors defined on the whole lattice 
+ * It can act on spinors defined on the whole lattice
  * or on spinors with definite parity
  */
 
@@ -163,7 +163,7 @@ void Dphi_(spinor_field *out, spinor_field *in)
 
    error((in==NULL)||(out==NULL),1,"Dphi_ [Dphi.c]",
          "Attempt to access unallocated memory space");
-   
+
    error(in==out,1,"Dphi_ [Dphi.c]",
          "Input and output fields must be different");
 
@@ -173,10 +173,10 @@ void Dphi_(spinor_field *out, spinor_field *in)
    error(out->type==&glattice && in->type!=&glattice,1,"Dphi_ [Dphi.c]", "Spinors don't match! (3)");
 #endif
 
-        
+
    ++MVMcounter; /* count matrix calls */
    if(out->type==&glattice) ++MVMcounter;
- 
+
 /************************ loop over all lattice sites *************************/
    /* start communication of input spinor field */
    start_sf_sendrecv(in);
@@ -199,22 +199,22 @@ void Dphi_(spinor_field *out, spinor_field *in)
 #endif
 
        r=_FIELD_AT(out,ix);
- 
+
        /******************************* direction +0 *********************************/
 
        iy=iup(ix,0);
        sp=_FIELD_AT(in,iy);
        up=pu_gauge_f(ix,0);
-      
+
        _vector_add_f(psi,(*sp).c[0],(*sp).c[2]);
        _suNf_theta_T_multiply(chi,(*up),psi);
-      
+
        (*r).c[0]=chi;
        (*r).c[2]=chi;
 
        _vector_add_f(psi,(*sp).c[1],(*sp).c[3]);
        _suNf_theta_T_multiply(chi,(*up),psi);
-         
+
        (*r).c[1]=chi;
        (*r).c[3]=chi;
 
@@ -223,16 +223,16 @@ void Dphi_(spinor_field *out, spinor_field *in)
        iy=idn(ix,0);
        sm=_FIELD_AT(in,iy);
        um=pu_gauge_f(iy,0);
-      
+
        _vector_sub_f(psi,(*sm).c[0],(*sm).c[2]);
        _suNf_theta_T_inverse_multiply(chi,(*um),psi);
-         
+
        _vector_add_assign_f((*r).c[0],chi);
        _vector_sub_assign_f((*r).c[2],chi);
 
        _vector_sub_f(psi,(*sm).c[1],(*sm).c[3]);
        _suNf_theta_T_inverse_multiply(chi,(*um),psi);
-         
+
        _vector_add_assign_f((*r).c[1],chi);
        _vector_sub_assign_f((*r).c[3],chi);
 
@@ -241,16 +241,16 @@ void Dphi_(spinor_field *out, spinor_field *in)
        iy=iup(ix,1);
        sp=_FIELD_AT(in,iy);
        up=pu_gauge_f(ix,1);
-      
+
        _vector_i_add_f(psi,(*sp).c[0],(*sp).c[3]);
        _suNf_theta_X_multiply(chi,(*up),psi);
-         
+
        _vector_add_assign_f((*r).c[0],chi);
        _vector_i_sub_assign_f((*r).c[3],chi);
 
        _vector_i_add_f(psi,(*sp).c[1],(*sp).c[2]);
        _suNf_theta_X_multiply(chi,(*up),psi);
-         
+
        _vector_add_assign_f((*r).c[1],chi);
        _vector_i_sub_assign_f((*r).c[2],chi);
 
@@ -259,16 +259,16 @@ void Dphi_(spinor_field *out, spinor_field *in)
        iy=idn(ix,1);
        sm=_FIELD_AT(in,iy);
        um=pu_gauge_f(iy,1);
-      
+
        _vector_i_sub_f(psi,(*sm).c[0],(*sm).c[3]);
        _suNf_theta_X_inverse_multiply(chi,(*um),psi);
-         
+
        _vector_add_assign_f((*r).c[0],chi);
        _vector_i_add_assign_f((*r).c[3],chi);
 
        _vector_i_sub_f(psi,(*sm).c[1],(*sm).c[2]);
        _suNf_theta_X_inverse_multiply(chi,(*um),psi);
-         
+
        _vector_add_assign_f((*r).c[1],chi);
        _vector_i_add_assign_f((*r).c[2],chi);
 
@@ -277,16 +277,16 @@ void Dphi_(spinor_field *out, spinor_field *in)
        iy=iup(ix,2);
        sp=_FIELD_AT(in,iy);
        up=pu_gauge_f(ix,2);
-      
+
        _vector_add_f(psi,(*sp).c[0],(*sp).c[3]);
        _suNf_theta_Y_multiply(chi,(*up),psi);
-         
+
        _vector_add_assign_f((*r).c[0],chi);
        _vector_add_assign_f((*r).c[3],chi);
 
        _vector_sub_f(psi,(*sp).c[1],(*sp).c[2]);
        _suNf_theta_Y_multiply(chi,(*up),psi);
-      
+
        _vector_add_assign_f((*r).c[1],chi);
        _vector_sub_assign_f((*r).c[2],chi);
 
@@ -295,7 +295,7 @@ void Dphi_(spinor_field *out, spinor_field *in)
        iy=idn(ix,2);
        sm=_FIELD_AT(in,iy);
        um=pu_gauge_f(iy,2);
-      
+
        _vector_sub_f(psi,(*sm).c[0],(*sm).c[3]);
        _suNf_theta_Y_inverse_multiply(chi,(*um),psi);
 
@@ -313,7 +313,7 @@ void Dphi_(spinor_field *out, spinor_field *in)
        iy=iup(ix,3);
        sp=_FIELD_AT(in,iy);
        up=pu_gauge_f(ix,3);
-      
+
        _vector_i_add_f(psi,(*sp).c[0],(*sp).c[2]);
        _suNf_theta_Z_multiply(chi,(*up),psi);
 
@@ -331,7 +331,7 @@ void Dphi_(spinor_field *out, spinor_field *in)
        iy=idn(ix,3);
        sm=_FIELD_AT(in,iy);
        um=pu_gauge_f(iy,3);
-      
+
        _vector_i_sub_f(psi,(*sm).c[0],(*sm).c[2]);
        _suNf_theta_Z_inverse_multiply(chi,(*um),psi);
 
@@ -343,7 +343,7 @@ void Dphi_(spinor_field *out, spinor_field *in)
 
        _vector_add_assign_f((*r).c[1],chi);
        _vector_i_sub_assign_f((*r).c[3],chi);
-      
+
        /******************************** end of loop *********************************/
 
        _spinor_mul_f(*r,-0.5,*r);
@@ -366,10 +366,10 @@ void Dphi(double m0, spinor_field *out, spinor_field *in)
    double SFrho;
    suNf_spinor tmp;
 #endif /* ROTATED_SF */
-   
+
    error((in==NULL)||(out==NULL),1,"Dphi [Dphi.c]",
          "Attempt to access unallocated memory space");
-   
+
    error(in==out,1,"Dphi [Dphi.c]",
          "Input and output fields must be different");
 
@@ -378,12 +378,12 @@ void Dphi(double m0, spinor_field *out, spinor_field *in)
 #ifdef CHECK_SPINOR_MATCHING
    error(out->type!=&glattice || in->type!=&glattice,1,"Dphi [Dphi.c]", "Spinors are not defined on all the lattice!");
 #endif /* CHECK_SPINOR_MATCHING */
-    
+
    Dphi_(out, in);
 
    rho=4.+m0;
    spinor_field_mul_add_assign_f(out,rho,in);
-   
+
 #ifdef ROTATED_SF
    SFrho=3.*_update_par.SF_ds+_update_par.SF_zf-4.;
 
@@ -393,7 +393,7 @@ void Dphi(double m0, spinor_field *out, spinor_field *in)
 			r=_FIELD_AT(out,index);
       sp=_FIELD_AT(in,index);
 			_spinor_mul_add_assign_f(*r,SFrho,*sp);
-			
+
 			_spinor_pminus_f(tmp,*sp);
 			_spinor_g5_assign_f(tmp);
 			if(_update_par.SF_sign==1) {
@@ -409,7 +409,7 @@ void Dphi(double m0, spinor_field *out, spinor_field *in)
 			r=_FIELD_AT(out,index);
       sp=_FIELD_AT(in,index);
 			_spinor_mul_add_assign_f(*r,SFrho,*sp);
-			
+
 			_spinor_pplus_f(tmp,*sp);
 			_spinor_g5_assign_f(tmp);
 			if(_update_par.SF_sign==1) {
@@ -443,24 +443,24 @@ void g5Dphi(double m0, spinor_field *out, spinor_field *in)
 #ifdef CHECK_SPINOR_MATCHING
    error(out->type!=&glattice || in->type!=&glattice,1,"g5Dphi [Dphi.c]", "Spinors are not defined on all the lattice!");
 #endif /* CHECK_SPINOR_MATCHING */
-    
+
    apply_BCs_on_spinor_field(in);
 
    Dphi_(out, in);
 
    rho=4.+m0;
    spinor_field_mul_add_assign_f(out,rho,in);
-   
+
 #ifdef ROTATED_SF
    SFrho=3.*_update_par.SF_ds+_update_par.SF_zf-4.;
-   
+
    if(COORD[0] == 0) {
      for (ix=0;ix<X;++ix) for (iy=0;iy<Y;++iy) for (iz=0;iz<Z;++iz){
        index=ipt(1,ix,iy,iz);
        r=_FIELD_AT(out,index);
        sp=_FIELD_AT(in,index);
        _spinor_mul_add_assign_f(*r,SFrho,*sp);
-       
+
        _spinor_pminus_f(tmp,*sp);
        _spinor_g5_assign_f(tmp);
        if(_update_par.SF_sign==1) {
@@ -476,7 +476,7 @@ void g5Dphi(double m0, spinor_field *out, spinor_field *in)
        r=_FIELD_AT(out,index);
        sp=_FIELD_AT(in,index);
        _spinor_mul_add_assign_f(*r,SFrho,*sp);
-       
+
        _spinor_pplus_f(tmp,*sp);
        _spinor_g5_assign_f(tmp);
        if(_update_par.SF_sign==1) {
@@ -487,7 +487,7 @@ void g5Dphi(double m0, spinor_field *out, spinor_field *in)
      }
    }
 #endif /* ROTATED_SF */
-   
+
    spinor_field_g5_assign_f(out);
 
    apply_BCs_on_spinor_field(out);
@@ -503,13 +503,13 @@ void g5Dphi(double m0, spinor_field *out, spinor_field *in)
 void Dphi_eopre(double m0, spinor_field *out, spinor_field *in)
 {
   double rho;
-  
+
   error((in==NULL)||(out==NULL),1,"Dphi_eopre [Dphi.c]",
 	"Attempt to access unallocated memory space");
-  
+
   error(in==out,1,"Dphi_eopre [Dphi.c]",
 	"Input and output fields must be different");
-  
+
 #ifdef CHECK_SPINOR_MATCHING
   error(out->type!=&glat_even || in->type!=&glat_even,1,"Dphi_eopre " __FILE__, "Spinors are not defined on even lattice!");
 #endif /* CHECK_SPINOR_MATCHING */
@@ -518,14 +518,14 @@ void Dphi_eopre(double m0, spinor_field *out, spinor_field *in)
 
   /* alloc memory for temporary spinor field */
   if (init_dirac) { init_Dirac(); init_dirac=0; }
-  
+
   Dphi_(otmp, in);
   apply_BCs_on_spinor_field(otmp);
   Dphi_(out, otmp);
-  
+
   rho=4.0+m0;
   rho*=-rho; /* this minus sign is taken into account below */
-  
+
   spinor_field_mul_add_assign_f(out,rho,in);
   spinor_field_minus_f(out,out);
   apply_BCs_on_spinor_field(out);
@@ -540,13 +540,13 @@ void Dphi_eopre(double m0, spinor_field *out, spinor_field *in)
 void Dphi_oepre(double m0, spinor_field *out, spinor_field *in)
 {
   double rho;
-  
+
   error((in==NULL)||(out==NULL),1,"Dphi_oepre [Dphi.c]",
 	"Attempt to access unallocated memory space");
-  
+
   error(in==out,1,"Dphi_oepre [Dphi.c]",
 	"Input and output fields must be different");
-  
+
 #ifdef CHECK_SPINOR_MATCHING
   error(out->type!=&glat_odd || in->type!=&glat_odd,1,"Dphi_oepre " __FILE__, "Spinors are not defined on odd lattice!");
 #endif /* CHECK_SPINOR_MATCHING */
@@ -555,14 +555,14 @@ void Dphi_oepre(double m0, spinor_field *out, spinor_field *in)
 
   /* alloc memory for temporary spinor field */
   if (init_dirac) { init_Dirac(); init_dirac=0; }
-  
+
   Dphi_(etmp, in);
   apply_BCs_on_spinor_field(etmp);
   Dphi_(out, etmp);
-  
+
   rho=4.0+m0;
   rho*=-rho; /* this minus sign is taken into account below */
-  
+
   spinor_field_mul_add_assign_f(out,rho,in);
   spinor_field_minus_f(out,out);
 
@@ -574,13 +574,13 @@ void Dphi_oepre(double m0, spinor_field *out, spinor_field *in)
 void g5Dphi_eopre(double m0, spinor_field *out, spinor_field *in)
 {
   double rho;
-  
+
   error((in==NULL)||(out==NULL),1,"g5Dphi_eopre [Dphi.c]",
 	"Attempt to access unallocated memory space");
-  
+
   error(in==out,1,"Dphi_eopre [Dphi.c]",
 	"Input and output fields must be different");
-  
+
 #ifdef CHECK_SPINOR_MATCHING
   error(out->type!=&glat_even || in->type!=&glat_even,1,"g5Dphi_eopre " __FILE__, "Spinors are not defined on even lattice!");
 #endif /* CHECK_SPINOR_MATCHING */
@@ -589,14 +589,14 @@ void g5Dphi_eopre(double m0, spinor_field *out, spinor_field *in)
 
   /* alloc memory for temporary spinor field */
   if (init_dirac) { init_Dirac(); init_dirac=0; }
-  
+
   Dphi_(otmp, in);
   apply_BCs_on_spinor_field(otmp);
   Dphi_(out, otmp);
-  
+
   rho=4.0+m0;
   rho*=-rho; /* this minus sign is taken into account below */
-  
+
   spinor_field_mul_add_assign_f(out,rho,in);
   spinor_field_minus_f(out,out);
   spinor_field_g5_assign_f(out);
@@ -611,14 +611,14 @@ void g5Dphi_eopre_sq(double m0, spinor_field *out, spinor_field *in) {
 
   g5Dphi_eopre(m0, etmp, in);
   g5Dphi_eopre(m0, out, etmp);
-  
+
 }
 
 /* g5Dhi ^2 */
 void g5Dphi_sq(double m0, spinor_field *out, spinor_field *in) {
   /* alloc memory for temporary spinor field */
   if (init_dirac) { init_Dirac(); init_dirac=0; }
-  
+
 #ifdef ROTATED_SF
   /*the switch of the SF_sign is needed to take care of the antihermiticity of the boundary term of the dirac operator*/
   g5Dphi(m0, gtmp, in);
@@ -640,13 +640,13 @@ void Qhat_eopre(double m0, double mu, spinor_field* out, spinor_field *in){
   complex imu;
   imu.re=0;
   imu.im=-mu/norm;
-  
+
   error((in==NULL)||(out==NULL),1,"Qhat_eopre [Dphi.c]",
   	"Attempt to access unallocated memory space");
-  
+
   error(in==out,1,"Qhat_eopre [Dphi.c]",
         "Input and output fields must be different");
-  
+
 #ifdef CHECK_SPINOR_MATCHING
   error(out->type!=&glat_even || in->type!=&glat_even,1,"Qhat_eopre " __FILE__, "Spinors are not defined on even lattice!");
 #endif /* CHECK_SPINOR_MATCHING */
@@ -660,7 +660,7 @@ void Qhat_eopre(double m0, double mu, spinor_field* out, spinor_field *in){
   spinor_field_mul_f(otmp2,rho,otmp);
   spinor_field_g5_mulc_add_assign_f(otmp2,imu,otmp);
   Dphi_(out, otmp2);
-  
+
   rho = -(4+m0);
   spinor_field_mul_add_assign_f(out,rho,in);
   imu.im=-mu;
@@ -676,7 +676,7 @@ void Qhat_eopre(double m0, double mu, spinor_field* out, spinor_field *in){
 void Qhat_eopre_sq(double m0, double mu, spinor_field *out, spinor_field *in) {
   /* alloc memory for temporary spinor field */
   if (init_dirac) { init_Dirac(); init_dirac=0; }
-  
+
 #ifdef ROTATED_SF
   /*the switch of the SF_sign is needed to take care of the antihermiticity of the boundary term of the dirac operator*/
   error(1,"Qhat_eopre_sq",__FILE__,"Not implemented\n");
@@ -706,7 +706,7 @@ static void Cphi_(double mass, spinor_field *dptr, spinor_field *sptr, int assig
 	{
 		suNf_vector v1, v2;
 		suNf_spinor *out, *in, tmp;
-		suNfc *s0, *s1, *s2, *s3;
+		suNffull *s0, *s1, *s2, *s3;
 
 		// Field pointers
 		out = _FIELD_AT(dptr,ix);
@@ -717,23 +717,23 @@ static void Cphi_(double mass, spinor_field *dptr, spinor_field *sptr, int assig
 		s3 = _4FIELD_AT(cl_term,ix,3);
 
 		// Component 0
-		_suNfc_multiply(v1, *s0, in->c[0]);
-		_suNfc_multiply(v2, *s1, in->c[1]);
+		_suNffull_multiply(v1, *s0, in->c[0]);
+		_suNffull_multiply(v2, *s1, in->c[1]);
 		_vector_add_f(tmp.c[0], v1, v2);
 
 		// Component 1
-		_suNfc_inverse_multiply(v1, *s1, in->c[0]);
-		_suNfc_multiply(v2, *s0, in->c[1]);
+		_suNffull_inverse_multiply(v1, *s1, in->c[0]);
+		_suNffull_multiply(v2, *s0, in->c[1]);
 		_vector_sub_f(tmp.c[1], v1, v2);
 
 		// Component 2
-		_suNfc_multiply(v1, *s2, in->c[2]);
-		_suNfc_multiply(v2, *s3, in->c[3]);
+		_suNffull_multiply(v1, *s2, in->c[2]);
+		_suNffull_multiply(v2, *s3, in->c[3]);
 		_vector_add_f(tmp.c[2], v1, v2);
 
 		// Component 3
-		_suNfc_inverse_multiply(v1, *s3, in->c[2]);
-		_suNfc_multiply(v2, *s2, in->c[3]);
+		_suNffull_inverse_multiply(v1, *s3, in->c[2]);
+		_suNffull_multiply(v2, *s2, in->c[3]);
 		_vector_sub_f(tmp.c[3], v1, v2);
 
 		// Add mass

@@ -1,6 +1,6 @@
 /***************************************************************************\
 * Copyright (c) 2017
-* All rights reserved.                                                      * 
+* All rights reserved.                                                      *
 \***************************************************************************/
 
 #include "global.h"
@@ -57,7 +57,11 @@ static void force_scalar_s(double dt, void *vpar)
 
 static void outer_product(suNg *u, suNg_vector *v1, suNg_vector *v2)
 {
+	#ifndef GAUGE_SPN
 	for(int i = 0; i < NG*NG; i++)
+	#else
+	for(int i = 0; i < NG*NG/2; i++)
+	#endif
 	{
 		int row = i/NG;
 		int col = i%NG;

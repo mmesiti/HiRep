@@ -1,12 +1,12 @@
 /***************************************************************************\
-* Copyright (c) 2008, Claudio Pica                                          *   
-* All rights reserved.                                                      * 
+* Copyright (c) 2008, Claudio Pica                                          *
+* All rights reserved.                                                      *
 \***************************************************************************/
 
 /*******************************************************************************
 *
 * File utils.h
-* 
+*
 * Some useful functions
 *
 *******************************************************************************/
@@ -32,7 +32,7 @@ typedef struct {
   int SF_BCs;
   suNg gauge_boundary_up;
   suNg gauge_boundary_dn;
-} BCs_pars_t;  
+} BCs_pars_t;
 
 void init_BCs(BCs_pars_t *pars);
 void free_BCs();
@@ -42,7 +42,12 @@ void apply_BCs_on_momentum_field(suNg_av_field *force);
 void apply_BCs_on_spinor_field(spinor_field *sp);
 void apply_BCs_on_spinor_field_flt(spinor_field_flt *sp);
 void apply_background_field_zdir(suNg_field* V,double Q,int n);
+
+#if defined(GAUGE_SPN) && defined(REPR_FUNDAMENTAL)
+void apply_BCs_on_clover_term(suNffull_field*);
+#else
 void apply_BCs_on_clover_term(suNfc_field*);
+#endif
 
 void cross_prod(suNg_vector *v1,suNg_vector *v2,suNg_vector *v3);
 void cross_prod_flt(suNg_vector_flt *v1,suNg_vector_flt *v2,suNg_vector_flt *v3);
@@ -102,4 +107,4 @@ int HYP_best_parameters(double mtp[6859], double w[3]);
 #include <sys/time.h>
 int timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y);
 
-#endif 
+#endif

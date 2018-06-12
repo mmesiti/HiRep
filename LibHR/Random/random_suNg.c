@@ -62,7 +62,7 @@ void random_suNg(suNg *u) {
   suNg_vector *pu1=(suNg_vector*)(u);
 	
 #ifdef GAUGE_SPN
-  _suNg_full_unit(*u);
+  _suNgfull_unit(*u);
 #else
   _suNg_unit(*u);
 #endif
