@@ -64,6 +64,10 @@ format_type format[nformats] = {
 #ifdef WITH_QUATERNIONS
   { .name="su2q" ,  .read=read_gauge_field_su2q ,  .write=write_gauge_field_su2q },
 #endif
+#ifdef GAUGE_SPN
+  { .name="compSPN" ,  .read=read_gauge_field,  .write=write_gauge_field },
+  { .name="fullSPN" ,  .read=read_gauge_field_fullSPN ,  .write=write_gauge_field_fullSPN },
+#endif
   { .name="openQCD" ,  .read=read_gauge_field_openQCD ,  .write=write_gauge_field_openQCD }
 };
 
