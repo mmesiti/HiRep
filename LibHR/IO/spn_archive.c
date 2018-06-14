@@ -116,10 +116,11 @@ void write_gauge_field_fullSPN(char filename[]){
                         for (lsite[3]=0; lsite[3]<Z; ++lsite[3]) { /* loop on local Z */
                             int ix=ipt(lsite[0],lsite[1],lsite[2],lsite[3]);
                             suNg *pm=pu_gauge(ix,0);
-                            _suNg_expand( *(cm++),*(pm++)); /* copy and expand 4 directions */
-                            _suNg_expand( *(cm++),*(pm++));
-                            _suNg_expand( *(cm++),*(pm++));
-                            _suNg_expand( *(cm++),*(pm));
+                            /* copy and expand 4 directions */
+                            _suNg_expand( *cm,*pm); cm++;pm++;
+                            _suNg_expand( *cm,*pm); cm++;pm++;
+                            _suNg_expand( *cm,*pm); cm++;pm++;
+                            _suNg_expand( *cm,*pm); cm++;
 
                             if(four_fermion_active) {
                                 double * s_buff = (double*)cm;
@@ -136,9 +137,9 @@ void write_gauge_field_fullSPN(char filename[]){
                     if (pid!=0) { /* do send/receive only if the data is not on PID 0 */ 
                         /* send buffer */
                         if (pid==PID) {
-#ifndef NDEBUG
+#ifndef NDEBUG 
                             error(Z!=(GLB_Z/NP_Z+((p[3]<rz)?1:0)),1,"write_gauge_field", "Local lattice size mismatch!");
-#endif
+#endif // NDEBUG
                             mpiret=MPI_Send(buff, bsize, MPI_DOUBLE, 0, 999, GLB_COMM);
 #ifndef NDEBUG
                             if (mpiret != MPI_SUCCESS) {
@@ -148,7 +149,7 @@ void write_gauge_field_fullSPN(char filename[]){
                                 lprintf("MPI",0,"ERROR: %s\n",mesg);
                                 error(1,1,"write_gauge_field " __FILE__,"Cannot send buffer");
                             }
-#endif
+#endif // NDEBUG
                         }
                         /* receive buffer */
                         if (PID==0) {
@@ -168,10 +169,10 @@ void write_gauge_field_fullSPN(char filename[]){
                                 }
                                 error(1,1,"write_gauge_field " __FILE__,"Cannot receive buffer");
                             }
-#endif
+#endif // NDEBUG
                         }
                     }
-#endif
+#endif // WITH_MPI
 
                     /* write buffer to file */
                     if (PID==0) {
