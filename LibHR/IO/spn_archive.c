@@ -29,6 +29,10 @@
 #include "suN.h"
 
 void write_gauge_field_fullSPN(char filename[]){
+  write_gauge_field_matrix_fullSPN(filename);
+}
+
+void write_gauge_field_matrix_fullSPN(char filename[]){
     FILE *fp=NULL;
     int g[4], p[4];
     double *buff=NULL;
@@ -204,6 +208,16 @@ void write_gauge_field_fullSPN(char filename[]){
 }
 
 void read_gauge_field_fullSPN(char filename[]){
+    read_gauge_field_matrix_fullSPN(filename);
+#ifndef ALLOCATE_REPR_GAUGE_FIELD
+  complete_gf_sendrecv(u_gauge); /*Apply boundary conditions already here for fundamental fermions*/
+  u_gauge_f=(suNf_field *)((void*)u_gauge);
+  apply_BCs_on_represented_gauge_field(); 
+#endif
+}
+
+
+void read_gauge_field_matrix_fullSPN(char filename[]){
     FILE *fp=NULL;
     int g[4], p[4];
     double *buff=NULL;

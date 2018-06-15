@@ -45,11 +45,21 @@ typedef struct _format_type {
   void (*write)(char*);
 } format_type;
 
-#ifdef WITH_QUATERNIONS
-#define nformats 10
+#ifdef GAUGE_SPN
+  #ifdef WITH_QUATERNIONS
+    #error "GAUGE_SPN incompatible with WITH_QUATERIONS"
+  #else
+    #define nformats 12
+  #endif
 #else
-#define nformats 11
+  #ifdef WITH_QUATERNIONS
+    #define nformats 10
+  #else
+    #define nformats 11
+  #endif
 #endif
+
+
 
 format_type format[nformats] = {
   { .name="ascii" ,     .read=read_gauge_field_ascii ,     .write=NULL },
