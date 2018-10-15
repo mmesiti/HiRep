@@ -374,7 +374,7 @@ static void force_clover_core(double dt)
 					_suNf_sub_assign(Wg[8], s1);
 
           for(int i=0; i<9; i++){
-            _suNf_expand(W[i],Wg[i])
+            _suNf_expand(W[i],Wg[i]);
           }
 
 					// Calculate sum of forces
@@ -393,7 +393,7 @@ static void force_clover_core(double dt)
 					_suNffull_add_assign(s2, s3);
 					_suNffull_times_suNffull(s1, s2, W[4]);
 					_suNffull_add_assign(fmat, s1);
-          _suNf_expand(s2,*pu_gauge_f(ix,mu))
+          _suNf_expand(s2,*pu_gauge_f(ix,mu));
 					_suNffull_times_suNffull(s1, s2, fmat);
 
 					// Project on force
