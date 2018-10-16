@@ -212,9 +212,15 @@ END
                 write_suNr();
                 print "typedef $rdataname ${rdataname}_FMAT;\n\n";
                 print "typedef ${rdataname}_flt ${rdataname}_FMAT_flt;\n\n";
+                if ( $suff ne $fundsuff){
+                    print "typedef ${rdataname} ${rdataname}full;\n\n";
+                }
             } else {
                 print "typedef $dataname ${dataname}c;\n\n";
                 print "typedef ${dataname}_flt ${dataname}c_flt;\n\n";
+                if ( $suff ne $fundsuff) {
+                   print "typedef ${dataname} ${dataname}full;\n\n";
+                }
             }
 
         } elsif ($su2quat==0) {
