@@ -1,4 +1,4 @@
-* Merge Notes
+####### Merge Notes
 The following document has been produced looking at the output 
 of 
 git diff -w COMMIT__BEFORE__FORK LATEST_SPN_COMMIT
@@ -14,8 +14,10 @@ LATEST_SPN_COMMIT = b34b469b6e0bd7d7925e57a5f792c18069993fa9
    - trigger compilation error if using quaternions with `GAUGE_SPN`
    - added formats "fullSPN" and "compSPN" (compressed)
      (see /LibHR +920 -103/IO/spn_archive.c +406 -0)
+
 * GaugeFix/gaugefix.c +4 -0 +4 -0
   for loop only up to NG/2 in the SPN case
+
 * Include +101 -5
  * TMPL/suN_repr_func.h.tmpl +0 -0
    added _`algebra_project_FMAT` macro (see autosun)
@@ -43,10 +45,12 @@ LATEST_SPN_COMMIT = b34b469b6e0bd7d7925e57a5f792c18069993fa9
  * utils.h +5 -1
    clover term-related logic uses `suNffull_field` when using GAUGE_SPN and 
    REPR_FUNDAMENTAL
+
 * LibHR +920 -103
  * Geometry/communications.c +12 -1
    clover term-related logic uses `suNffull_field` when using GAUGE_SPN and 
    REPR_FUNDAMENTAL
+
  * IO +428 -5
   * archive_su2quat.c +18 -1
     added functions to translate between quaternion and compressed spn format.
@@ -59,6 +63,7 @@ LATEST_SPN_COMMIT = b34b469b6e0bd7d7925e57a5f792c18069993fa9
     * read_gauge_field
     * read_gauge_field_matrix
     with a '_fullSPN' suffix. These functions are only used in converter.c    
+
  * Memory +20 -0
   * amalloc.c +14 -0
     Debugging function added - unrelated to SPN
@@ -66,8 +71,10 @@ LATEST_SPN_COMMIT = b34b469b6e0bd7d7925e57a5f792c18069993fa9
     Declaration of memory function for clover terms must use `suNffull_field`.
     (clover term-related logic uses `suNffull_field` when using GAUGE_SPN and 
     REPR_FUNDAMENTAL)
+
  * Random/random_suNg.c +37 -2
    Adaptation to produce SPN random matrices 
+
  * Update +328 -86
   * Dphi.c +9 -9
     Changes to `Cphi_`. (_)
@@ -105,6 +112,7 @@ LATEST_SPN_COMMIT = b34b469b6e0bd7d7925e57a5f792c18069993fa9
     _group_represent.
   * update_mt.c +72 -0
     new function `update_ghmc_stripped` for debug purposes.
+
  * Utils +95 -9
   * HYP_smearing.c +2 -2
     Some functions not working for SPN are removed from compilation or throw an 
@@ -122,9 +130,11 @@ LATEST_SPN_COMMIT = b34b469b6e0bd7d7925e57a5f792c18069993fa9
     then reusing the existing suN code.
   * suN_utils.c +26 -1
     rewrite of project_to_suNg for the SPN case.
+
 * Make +1929 -63
-  * MkRules +7 -0
-    Guard against use of SP2
+ * MkRules +7 -0
+   Guard against use of SP2
+
  * Utils +1908 -48
   * autosun +538 -30
    * adjoint.h +14 -1
@@ -158,8 +168,10 @@ LATEST_SPN_COMMIT = b34b469b6e0bd7d7925e57a5f792c18069993fa9
      * group_represent(): case for spn added, uses spmatrix
   * write_suN_headers.pl +1366 -14
      Written the code for generating spn-compressed macros.
+
 * RenormalizationFactors/measure_Z_mom.c +2 -0 +2 -0 
   just logging in main() for SPN
+
 * Spectrum +6 -0
  * measure_formfactor.c +2 -0
    just logging in main() for SPN
@@ -167,9 +179,11 @@ LATEST_SPN_COMMIT = b34b469b6e0bd7d7925e57a5f792c18069993fa9
    just logging in main() for SPN
  * mk_mesons_with_z2semwall_new.c +2 -0
    just logging in main() for SPN
+
 * TestProgram +2423 -80 
   A number of test programs were broken. Some of them were fixed, and some
   have been added (see, e.g., SPNtoSUNRegression) with some convenience scripts.
+
 * WilsonFlow +20 -4
  * WF_measure.c +2 -0
    just logging in main() for SPN
