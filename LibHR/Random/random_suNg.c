@@ -66,43 +66,42 @@ void random_suNg(suNg *u) {
 #else
   _suNg_unit(*u);
 #endif
-  
+
   for (int i=0; i<NG; ++i) {
-    suNg_vector *pu2 = pu1 + 1;
-    for (int j=i+1; j<NG; ++j) {
-  #ifdef GAUGE_SPN
-  	if( (i < NG/2 && j < NG/2) ){
-		random_su2(0.0,s);
-  		rotate(pu1, pu2, s);
-  		s[3] *=-1.;
-  		s[1] *=-1.;
-  		rotate(pu1+NG/2, pu2+NG/2,s);
-  	} else if( ( i >= NG/2 && j > NG/2) ){
-        random_su2(0.0,s);
-  		rotate(pu1,pu2,s);
-  		s[3] *=-1.;		
-  		s[1] *=-1.;
-  		rotate(pu1-NG/2,pu2-NG/2,s);
-  	}
-    else if( ( j == i + NG/2) ){
-        random_su2(0.0,s);
-        rotate(pu1,pu2,s) ;
-    }
-  	else ;
-  #else
-    random_su2(0.0,s);
-  	rotate(pu1,pu2,s);
-  #endif
-      ++pu2; 
-    } 
-	  ++pu1; 
+      suNg_vector *pu2 = pu1 + 1;
+      for (int j=i+1; j<NG; ++j) {
+#ifdef GAUGE_SPN
+          if( (i < NG/2 && j < NG/2) ){
+              random_su2(0.0,s);
+              rotate(pu1, pu2, s);
+              s[3] *=-1.;
+              s[1] *=-1.;
+              rotate(pu1+NG/2, pu2+NG/2,s);
+          } else if( ( i >= NG/2 && j > NG/2) ){
+              random_su2(0.0,s);
+              rotate(pu1,pu2,s);
+              s[3] *=-1.;		
+              s[1] *=-1.;
+              rotate(pu1-NG/2,pu2-NG/2,s);
+          }
+          else if( ( j == i + NG/2) ){
+              random_su2(0.0,s);
+              rotate(pu1,pu2,s) ;
+          }
+          else ;
+#else
+          random_su2(0.0,s);
+          rotate(pu1,pu2,s);
+#endif
+          ++pu2; 
+      } 
+      ++pu1; 
   }
 #endif //WITH_QUATERNIONS
 #ifdef GAUGE_SPN
-	for (int i=0; i<NG*NG/2; ++i) { r->c[i].re=ut.c[i].re; r->c[i].im=ut.c[i].im; }
+r for (int i=0; i<NG*NG/2; ++i) { r->c[i].re=ut.c[i].re; r->c[i].im=ut.c[i].im; }
 #endif
 }
-
 #else // GAUGE_SON case
 void random_suNg(suNg *u) {
   suNg tmp;
