@@ -55,13 +55,13 @@ static void force_scalar_s(double dt, void *vpar)
 	}
 }
 
+#ifdef GAUGE_SUN
 static void outer_product(suNg *u, suNg_vector *v1, suNg_vector *v2)
+#elif defined(GAUGE_SPN)
+static void outer_product(suNgfull *u, suNg_vector *v1, suNg_vector *v2)
+#else
 {
-	#ifndef GAUGE_SPN
 	for(int i = 0; i < NG*NG; i++)
-	#else
-	for(int i = 0; i < NG*NG/2; i++)
-	#endif
 	{
 		int row = i/NG;
 		int col = i%NG;
@@ -76,13 +76,32 @@ static void force_scalar_g(double dt, void *vpar)
 
 	_MASTER_FOR(&glattice,ix)
 	{
-		suNg s1, s2;
+
 		suNg_algebra_vector f;
 
 		for(int mu = 0; mu < 4; mu++)
 		{
+#ifdef GAUGE_SUN
+            suNg s1;
+#ifdef GAUGE_SPN
+            suNgfull s1, s2full, sfield;
+#endif
+            suNg s2;
 			outer_product(&s1, pu_scalar(iup(ix,mu)), pu_scalar(ix));
+#ifdef GAUGE_SUN
 			_suNg_times_suNg(s2, *_4FIELD_AT(u_gauge,ix,mu), s1);
+#elif defined(GAUGE_SPN)
+            _suNg_expand(sfield,*_4FIELD_AT(u_gauge,ix,mu));
+			_suNgfull_times_suNgfull(s2full,sfield, s1);
+            // Linear operaton
+            //                 [[ XR+I*XI, YR+I*YI]
+            //                  [ ZR+I*ZI, TR+I*TI]]  
+            //                           |
+            //                           v
+            //[[ (XR+TR)/2 + I*(XI-TI)/2 , (YR-ZR)/2 + I*(YI+ZI)/2 ],
+            // [          ...            ,          ...            ]]
+			_project_to_spn(s2,s2full); 
+#endif
 			_fund_algebra_project(f,s2);
 			_algebra_vector_mul_add_assign_g(*_4FIELD_AT(force,ix,mu), -2.0*dt, f);
 		}
