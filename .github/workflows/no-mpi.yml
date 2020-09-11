@@ -5,6 +5,7 @@ on:
     branches:
       - master
       - spn-swansea-merge
+      - spn-swansea-merge-tol1.5e-15
 
 jobs:
   build:
