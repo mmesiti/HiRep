@@ -162,7 +162,7 @@ int main(int argc,char *argv[])
 	double complex test[4][4];
 	double complex rmat[4][4];
 	double complex trace, ctest;
-  double tol=1.e-15;
+  double tol=1.4e-15;
 	int sign;
   int return_value=0;
 	double norm2;
