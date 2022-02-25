@@ -167,6 +167,32 @@ static void setup_monomials()
          lprintf("ACTION", 10, "Monomial %d: level = %d, type = hmc, mass = %1.6f, force_prec = %1.2e, mt_prec = %1.2e\n",
                  i, level, par->mass, data.force_prec, data.MT_prec);
       }
+      else if(strcmp(type, "hmc_fund") == 0)
+      {
+         mon_hmc_fund_par *par = malloc(sizeof(*par));
+         data.par = par;
+         data.type = HMC_fund;
+
+         // Find parameters
+         par->mass = find_double(cur, "mass");
+         check(last_error, "Unable to find 'mass' in monomial of type 'hmc'\n");
+
+         data.MT_prec = find_double(cur, "mt_prec");
+         check(last_error, "Unable to find 'mt_prec' in monomial of type 'hmc'\n");
+
+         data.force_prec = find_double(cur, "force_prec");
+         check(last_error, "Unable to find 'force_prec' in monomial of type 'hmc'\n");
+
+         par->mre_past = find_double(cur, "mre_past");
+         check(last_error, "Unable to find 'mre_past' in monomial of type 'hmc'\n");
+
+         // Add monomial
+         mret = add_mon(&data);
+
+         // Monomial information
+         lprintf("ACTION", 10, "Monomial %d: level = %d, type = hmc, mass = %1.6f, force_prec = %1.2e, mt_fund_prec = %1.2e\n",
+                 i, level, par->mass, data.force_prec, data.MT_prec);
+      }
       else if(strcmp(type, "tm") == 0)
       {
          mon_tm_par *par = malloc(sizeof(*par));

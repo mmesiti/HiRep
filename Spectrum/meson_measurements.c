@@ -86,6 +86,36 @@ static void flip_T_bc(int tau){
 
 #define corr_ind(px,py,pz,n_mom,tc,nm,cm) ((px)*(n_mom)*(n_mom)*(24)*(nm)+(py)*(n_mom)*(24)*(nm)+(pz)*(24)*(nm)+ ((cm)*(24)) +(tc))
 
+/*for fundamental representation*/
+void measure_spectrum_fund_pt(int tau, int nm, double* m, int n_mom,int nhits,int conf_num, double precision){
+  spinor_field_fund* source = alloc_spinor_field_f_fund(4,&glattice);
+  spinor_field_fund* prop =  alloc_spinor_field_f_fund(4*nm*NG,&glattice);
+  init_propagator_fund_eo(nm, m, precision);
+  int k;
+  lprintf("MAIN",0,"Point Source at (%d,0,0,0) \n",tau);
+  for (k=0;k<NG;++k){
+    create_point_source_fund(source,tau,k);
+    calc_propagator_fund(prop + 4*k,source,4);//4 for spin component
+    if (n_mom>1){
+      measure_point_mesons_momenta_fund(meson_correlators,prop+4*k, source, nm, tau, n_mom);
+    }
+    else{
+      measure_mesons_fund(meson_correlators,prop+4*k, source, nm, tau);
+    }
+  }
+//  lprintf("MAIN",0,"Here?\n");
+//  measure_conserved_currents_fund(cvc_correlators,prop, source, nm, tau);
+
+//  lprintf("MAIN",0,"or Here?\n");
+  print_mesons_fund(meson_correlators,1.,conf_num,nm,m,GLB_T,n_mom,"DEFAULT_POINT");
+//  print_mesons(cvc_correlators,1.,conf_num,nm,m,GLB_T,n_mom,"DEFAULT_POINT");
+
+  free_propagator_fund_eo(); 
+  free_spinor_field_f_fund(source);
+  free_spinor_field_f_fund(prop);
+}
+
+
 void measure_spectrum_pt(int tau, int nm, double* m, int n_mom,int nhits,int conf_num, double precision){
   spinor_field* source = alloc_spinor_field_f(4,&glattice);
   spinor_field* prop =  alloc_spinor_field_f(4*nm*NF,&glattice);

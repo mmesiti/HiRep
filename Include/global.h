@@ -135,6 +135,7 @@ GLB_VAR(suNg_field,*u_gauge,=NULL);
 GLB_VAR(suNg_scalar_field,*u_scalar,=NULL);
 GLB_VAR(suNg_field_flt,*u_gauge_flt,=NULL);
 GLB_VAR(suNf_field,*u_gauge_f,=NULL);
+GLB_VAR(suNg_field,*u_gauge_f_fund,=NULL);/*Do I need to creat new field type? like suNf_field_fund? JW*/
 GLB_VAR(suNg_field,*u_gauge_s,=NULL);
 GLB_VAR(suNf_field_flt,*u_gauge_f_flt,=NULL);
 #if defined(GAUGE_SPN) && defined(REPR_FUNDAMENTAL)
@@ -156,6 +157,7 @@ GLB_VAR(int,gauge_field_active,=0); // whether gauge field interactions is activ
 #define pu_scalar(ix) ((u_scalar->ptr)+ix)
 #define pu_gauge_flt(ix,mu) ((u_gauge_flt->ptr)+coord_to_index(ix,mu))
 #define pu_gauge_f(ix,mu) ((u_gauge_f->ptr)+coord_to_index(ix,mu))
+#define pu_gauge_f_fund(ix,mu) ((u_gauge_f_fund->ptr)+coord_to_index(ix,mu))
 #define pu_gauge_f_flt(ix,mu) ((u_gauge_f_flt->ptr)+coord_to_index(ix,mu))
 
 /* input parameters */

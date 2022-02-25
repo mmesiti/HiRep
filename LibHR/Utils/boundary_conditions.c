@@ -202,6 +202,12 @@ static void sp_Z_antiperiodic_BCs();
 /*static void sp_spatial_theta_BCs(double theta);*/
 static void chiSF_ds_BT(double ds);
 
+static void sp_fund_T_antiperiodic_BCs();
+static void sp_fund_X_antiperiodic_BCs();
+static void sp_fund_Y_antiperiodic_BCs();
+static void sp_fund_Z_antiperiodic_BCs();
+static void chiSF_fund_ds_BT(double ds);
+
 void apply_BCs_on_represented_gauge_field() {
 #ifdef BC_T_ANTIPERIODIC
   sp_T_antiperiodic_BCs();
@@ -223,6 +229,26 @@ void apply_BCs_on_represented_gauge_field() {
 #endif
 }
 
+void apply_BCs_on_represented_gauge_field_fund() {
+#ifdef BC_T_ANTIPERIODIC
+  sp_fund_T_antiperiodic_BCs();
+#endif
+#ifdef BC_X_ANTIPERIODIC
+  sp_fund_X_antiperiodic_BCs();
+#endif
+#ifdef BC_Y_ANTIPERIODIC
+  sp_fund_Y_antiperiodic_BCs();
+#endif
+#ifdef BC_Z_ANTIPERIODIC
+  sp_fund_Z_antiperiodic_BCs();
+#endif
+#ifdef ROTATED_SF
+#ifndef ALLOCATE_REPR_GAUGE_FIELD
+#error The represented gauge field must be allocated!!!
+#endif
+  chiSF_fund_ds_BT(BCs_pars.chiSF_boundary_improvement_ds);
+#endif
+}
 
 static void gf_Dirichlet_BCs(suNg* dn, suNg* up);
 static void gf_open_BCs();
@@ -252,10 +278,13 @@ void apply_BCs_on_momentum_field(suNg_av_field *force) {
 
 
 static void sf_Dirichlet_BCs(spinor_field *sp);
+//static void sf_Dirichlet_BCs_fund(spinor_field_fund *sp);
 static void sf_Dirichlet_BCs_flt(spinor_field_flt *sp);
 static void sf_open_BCs(spinor_field *sp);
+//static void sf_open_BCs_fund(spinor_field_fund *sp);
 static void sf_open_BCs_flt(spinor_field_flt *sp);
 static void sf_open_v2_BCs(spinor_field *sf);
+//static void sf_open_v2_BCs_fund(spinor_field_fund *sf);
 
 void apply_BCs_on_spinor_field(spinor_field *sp) {
 #ifdef BASIC_SF
@@ -268,6 +297,16 @@ void apply_BCs_on_spinor_field(spinor_field *sp) {
   sf_open_v2_BCs(sp);
 #endif
 }
+
+void apply_BCs_on_spinor_field_fund(spinor_field_fund *sp) {
+#ifdef BASIC_SF
+  sf_Dirichlet_BCs_fund(sp);
+#endif
+#ifdef ROTATED_SF
+  sf_open_BCs_fund(sp);
+#endif
+}
+
 
 void apply_BCs_on_spinor_field_flt(spinor_field_flt *sp) {
 #if defined(BASIC_SF) || defined(BC_T_OPEN)
@@ -304,7 +343,6 @@ void apply_BCs_on_clover_term(suNfc_field *cl) {
 }
 
 #endif
-
 
 /***************************************************************************/
 /* BOUNDARY CONDITIONS TO BE APPLIED ON THE REPRESENTED GAUGE FIELD        */
@@ -432,6 +470,137 @@ static void chiSF_ds_BT(double ds) {
         _suNf_mul(*u,ds,*u);
         u=pu_gauge_f(index,3);
         _suNf_mul(*u,ds,*u);
+      }
+    }
+  }
+}
+
+
+
+/***************************************************************************/
+/* BOUNDARY CONDITIONS TO BE APPLIED ON THE REPRESENTED FUNDAMENTAL GAUGE FIELD        */
+/***************************************************************************/
+
+static void sp_fund_T_antiperiodic_BCs() {
+  if(COORD[0]==0) {
+    int index;
+    int ix,iy,iz;
+    suNg *u;
+    for (ix=0;ix<X_EXT;++ix) for (iy=0;iy<Y_EXT;++iy) for (iz=0;iz<Z_EXT;++iz){
+      index=ipt_ext(2*T_BORDER,ix,iy,iz);
+      if(index!=-1) {
+        u=pu_gauge_f_fund(index,0);
+        _suNg_minus(*u,*u);
+      }
+    }
+  }
+}
+
+static void sp_fund_X_antiperiodic_BCs() {
+  if(COORD[1]==0) {
+    int index;
+    int it,iy,iz;
+    suNg *u;
+    for (it=0;it<T_EXT;++it) for (iy=0;iy<Y_EXT;++iy) for (iz=0;iz<Z_EXT;++iz){
+      index=ipt_ext(it,2*X_BORDER,iy,iz);
+      if(index!=-1) {
+        u=pu_gauge_f_fund(index,1);
+        _suNg_minus(*u,*u);
+      }
+    }
+  }
+}
+
+static void sp_fund_Y_antiperiodic_BCs() {
+  if(COORD[2]==0) {
+    int index;
+    int ix,it,iz;
+    suNg *u;
+    for (it=0;it<T_EXT;++it) for (ix=0;ix<X_EXT;++ix) for (iz=0;iz<Z_EXT;++iz){
+      index=ipt_ext(it,ix,2*Y_BORDER,iz);
+      if(index!=-1) {
+        u=pu_gauge_f_fund(index,2);
+        _suNg_minus(*u,*u);
+      }
+    }
+  }
+}
+
+static void sp_fund_Z_antiperiodic_BCs() {
+  if(COORD[3]==0) {
+    int index;
+    int ix,iy,it;
+    suNg *u;
+    for (it=0;it<T_EXT;++it) for (ix=0;ix<X_EXT;++ix) for (iy=0;iy<Y_EXT;++iy){
+      index=ipt_ext(it,ix,iy,2*Z_BORDER);
+      if(index!=-1) {
+        u=pu_gauge_f_fund(index,3);
+        _suNg_minus(*u,*u);
+      }
+    }
+  }
+}
+
+
+
+/*
+#ifndef REPR_ADJOINT
+static void sp_spatial_theta_BCs(double theta) {
+  complex phase[3];
+  phase[0].re=cos(theta/GLB_X);
+  phase[0].im=sin(theta/GLB_X);
+  phase[1].re=cos(theta/GLB_Y);
+  phase[1].im=sin(theta/GLB_Y);
+  phase[2].re=cos(theta/GLB_Z);
+  phase[2].im=sin(theta/GLB_Z);
+
+  int index,it,ix,iy,iz,mu;
+  suNf Rtmp;
+  suNf *Ru;
+  for (it=0;it<T_EXT;++it) for (ix=0;ix<X_EXT;++ix) for (iy=0;iy<Y_EXT;++iy) for (iz=0;iz<Z_EXT;++iz){
+    index=ipt_ext(it,ix,iy,iz);
+    if(index!=-1) {
+      for (mu=1;mu<4;mu++) {
+        Ru = pu_gauge_f(index,mu);
+        Rtmp = *Ru;
+        _suNf_mulc(*Ru,phase[mu-1],Rtmp);
+      }
+    }
+  }
+}
+#endif
+*/
+
+static void chiSF_fund_ds_BT(double ds) {
+  if(COORD[0] == 0) {
+    int index;
+    int ix,iy,iz;
+    suNg *u;
+    for (ix=0;ix<X_EXT;++ix) for (iy=0;iy<Y_EXT;++iy) for (iz=0;iz<Z_EXT;++iz){
+      index=ipt_ext(T_BORDER+1,ix,iy,iz);
+      if(index!=-1) {
+        u=pu_gauge_f_fund(index,1);
+        _suNg_mul(*u,ds,*u);
+        u=pu_gauge_f_fund(index,2);
+        _suNg_mul(*u,ds,*u);
+        u=pu_gauge_f_fund(index,3);
+        _suNg_mul(*u,ds,*u);
+      }
+    }
+  }
+  if(COORD[0] == NP_T-1) {
+    int index;
+    int ix,iy,iz;
+    suNg *u;
+    for (ix=0;ix<X_EXT;++ix) for (iy=0;iy<Y_EXT;++iy) for (iz=0;iz<Z_EXT;++iz){
+      index=ipt_ext(T+T_BORDER-1,ix,iy,iz);
+      if(index!=-1) {
+        u=pu_gauge_f_fund(index,1);
+        _suNg_mul(*u,ds,*u);
+        u=pu_gauge_f_fund(index,2);
+        _suNg_mul(*u,ds,*u);
+        u=pu_gauge_f_fund(index,3);
+        _suNg_mul(*u,ds,*u);
       }
     }
   }
@@ -842,6 +1011,29 @@ static void sf_Dirichlet_BCs(spinor_field *sp) {
   }
 }
 
+static void sf_Dirichlet_BCs_fund(spinor_field_fund *sp) {
+  int ix,iy,iz,index;
+  if(COORD[0] == 0) {
+    for (ix=0;ix<X_EXT;++ix) for (iy=0;iy<Y_EXT;++iy) for (iz=0;iz<Z_EXT;++iz){
+      index=ipt_ext(T_BORDER,ix,iy,iz);
+      if(index!=-1 && sp->type->master_shift <= index && sp->type->master_shift+sp->type->gsize_spinor > index  ) {
+        _spinor_zero_f(*_FIELD_AT(sp,index));
+      }
+      index=ipt_ext(T_BORDER+1,ix,iy,iz);
+      if(index!=-1 && sp->type->master_shift <= index && sp->type->master_shift+sp->type->gsize_spinor > index ) {
+        _spinor_zero_f(*_FIELD_AT(sp,index));
+      }
+    }
+  }
+  if(COORD[0] == NP_T-1) {
+    for (ix=0;ix<X_EXT;++ix) for (iy=0;iy<Y_EXT;++iy) for (iz=0;iz<Z_EXT;++iz){
+      index=ipt_ext(T+T_BORDER-1,ix,iy,iz);
+      if(index!=-1 && sp->type->master_shift <= index && sp->type->master_shift+sp->type->gsize_spinor > index ) {
+        _spinor_zero_f(*_FIELD_AT(sp,index));
+      }
+    }
+  }
+}
 
 static void sf_Dirichlet_BCs_flt(spinor_field_flt *sp) {
   int ix,iy,iz,index;
@@ -869,6 +1061,18 @@ static void sf_Dirichlet_BCs_flt(spinor_field_flt *sp) {
 
 
 static void sf_open_BCs(spinor_field *sp) {
+  int ix,iy,iz,index;
+  if(COORD[0] == 0) {
+    for (ix=0;ix<X_EXT;++ix) for (iy=0;iy<Y_EXT;++iy) for (iz=0;iz<Z_EXT;++iz){
+      index=ipt_ext(T_BORDER,ix,iy,iz);
+      if(index!=-1 && sp->type->master_shift <= index && sp->type->master_shift+sp->type->gsize_spinor > index ) {
+        _spinor_zero_f(*_FIELD_AT(sp,index));
+      }
+    }
+  }
+}
+
+static void sf_open_BCs_fund(spinor_field_fund *sp) {
   int ix,iy,iz,index;
   if(COORD[0] == 0) {
     for (ix=0;ix<X_EXT;++ix) for (iy=0;iy<Y_EXT;++iy) for (iz=0;iz<Z_EXT;++iz){

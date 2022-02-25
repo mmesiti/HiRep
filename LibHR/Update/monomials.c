@@ -57,6 +57,9 @@ const monomial *add_mon(monomial_data *mon_dat) {
     case HMC:
       new_mon->m = hmc_create(mon_dat);
       break;
+    case HMC_fund:
+      new_mon->m = hmc_fund_create(mon_dat);
+      break; 
     case RHMC:
       new_mon->m = rhmc_create(mon_dat);
       break;

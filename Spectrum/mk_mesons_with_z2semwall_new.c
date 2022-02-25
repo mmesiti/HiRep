@@ -265,6 +265,7 @@ int main(int argc,char *argv[]) {
   u_gauge=alloc_gfield(&glattice);
 #ifdef ALLOCATE_REPR_GAUGE_FIELD
   u_gauge_f=alloc_gfield_f(&glattice);
+  u_gauge_f_fund=alloc_gfield_f_fund(&glattice);
 #endif
 
   lprintf("MAIN",0,"Inverter precision = %e\n",mes_var.precision);
@@ -288,6 +289,8 @@ int main(int argc,char *argv[]) {
 
     lprintf("MAIN",0,"Configuration from %s\n", cnfg_filename);
     read_gauge_field(cnfg_filename);
+
+//    apply_BCs_on_fundamental_gauge_field();
     represent_gauge_field();
 
     lprintf("TEST",0,"<p> %1.6f\n",avr_plaquette());

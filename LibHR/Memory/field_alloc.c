@@ -119,6 +119,7 @@ _DECLARE_MEMORY_FUNC(gfield, suNg_field, 4);
 _DECLARE_MEMORY_FUNC(gfield_flt, suNg_field_flt, 4);
 
 _DECLARE_MEMORY_FUNC(gfield_f, suNf_field, 4);
+_DECLARE_MEMORY_FUNC(gfield_f_fund, suNg_field, 4);/*JW*/
 _DECLARE_MEMORY_FUNC(gfield_f_flt, suNf_field_flt, 4);
 _DECLARE_MEMORY_FUNC(scalar_field, suNg_scalar_field, 1);
 

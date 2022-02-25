@@ -81,5 +81,14 @@ void pf_local_action(scalar_field *loc_action, spinor_field *pf) {
   }
 }
 
-
+void pf_local_action_fund(scalar_field *loc_action, spinor_field_fund *pf) {
+  if (pf!=NULL) {
+    _MASTER_FOR(pf->type,i) {
+      double a=0.;
+      /* Fermions */
+      _spinor_prod_re_g(a,*_FIELD_AT(pf,i),*_FIELD_AT(pf,i));
+      *_FIELD_AT(loc_action,i)+=a;
+    }
+  }
+}
 

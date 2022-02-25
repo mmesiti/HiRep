@@ -11,7 +11,11 @@ void monomial_force(double dt, integrator_par *par)
 {
 	for(int n = 0; n < par->nmon; n++)
 	{
+//		lprintf("MD_INT",10,"Here? %d\n",par->nmon);
 		const monomial *m = par->mon_list[n];
+//		mon_hmc_fund_par *par = (mon_hmc_fund_par*)(m->data.par);
+//	        lprintf("MD_INT pseudofermion", 10, "%1.6f,%1.6f,%1.6f,%1.6f,%1.6f,%1.6f,%1.6f,%1.6f\n",*(par->pf),*(par->pf+1),*(par->pf+2),*(par->pf+3),*(par->pf+4),*(par->pf+5),*(par->pf+6),*(par->pf+7));
+//		lprintf("MD_INT",10,"or Here?\n");
 		m->update_force(dt, m->force_par);
 	}
 }
@@ -31,6 +35,16 @@ void monomial_field(double dt, integrator_par *par)
 		par->next->integrator(dt, par->next);
 	}
 }
+
+/*void gforce(suNg_av_field *force, double dt, int nmon, const monomial **mon_list);
+{
+  for(int n=0; n < nmon; n++)
+  {
+    const monomial *m = mon_list[n];
+    m->update_force(dt, force, m->force_par);
+  }
+}
+*/
 
 void leapfrog_multistep(double tlen, integrator_par *par)
 {
@@ -72,8 +86,8 @@ void O2MN_multistep(double tlen, integrator_par *par)
 		return;
 	}
 
-	lprintf("MD_INT", level, "Starting new MD trajectory with O2MN_multistep\n");
-	lprintf("MD_INT", level, "MD parameters: level=%d tlen=%1.6f nsteps=%d => dt=%1.6f\n", par->level, tlen, par->nsteps, dt);
+	lprintf("MD_INT", 10, "Starting new MD trajectory with O2MN_multistep\n");
+	lprintf("MD_INT", 10, "MD parameters: level=%d tlen=%1.6f nsteps=%d => dt=%1.6f\n", par->level, tlen, par->nsteps, dt);
  
 	for(int n = 0; n < par->nsteps; n++)
 	{

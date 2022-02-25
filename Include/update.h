@@ -27,9 +27,22 @@ typedef struct {
 	int init;
 } mre_par;
 
+typedef struct {
+	spinor_field_fund *s[2];
+	int num[2];
+	int max;
+	int init;
+} mre_fund_par;
+
+
 void mre_guess(mre_par*, int, spinor_field*, spinor_operator, spinor_field*);
 void mre_store(mre_par*, int, spinor_field*);
 void mre_init(mre_par*, int, double);
+
+void mre_fund_guess(mre_fund_par*, int, spinor_field_fund*, spinor_operator_fund, spinor_field_fund*);
+void mre_fund_store(mre_fund_par*, int, spinor_field_fund*);
+void mre_fund_init(mre_fund_par*, int, double);
+
 
 typedef struct {
 	int id;
@@ -54,6 +67,20 @@ typedef struct {
 	int logdet;
 	suNg_av_field **momenta;
 } force_hmc_par;
+
+typedef struct {
+	int id;
+	int n_pf;
+	spinor_field_fund *pf;
+	int hasenbusch;
+	double mass;
+	double b;
+	double mu;
+	double inv_err2, inv_err2_flt;
+	mre_fund_par mpar;
+	int logdet;
+	suNg_av_field **momenta;
+} force_hmc_fund_par;
 
 typedef struct {
 	double beta;
@@ -93,11 +120,15 @@ void lw_force(double, void*);
 void lw_local_action(scalar_field*, double, double, double);
 
 void fermion_force_begin();
+void fermion_force_fund_begin();
 void fermion_force_end(double dt, suNg_av_field*);
-void force_fermion_core(spinor_field*, spinor_field*, int, double, double);
+void fermion_force_fund_end(double dt, suNg_av_field*);
+void force_fermion_core(spinor_field*, spinor_field*, int, double, double*, double);
+void force_fermion_core_fund(spinor_field_fund*, spinor_field_fund*, int, double, double*, double);
 void force_clover_logdet(double, double);
 
 void force_hmc(double, void*);
+void force_hmc_fund(double, void*);
 void force_hmc_tm(double, void*);
 void force_rhmc(double, void*);
 void force0(double, void*);
@@ -107,8 +138,10 @@ void force_hmc_ff(double, void*); //Force from a HMC_ff or Hasenbusch_ff monomia
 void gaussian_momenta(suNg_av_field *momenta);
 void gaussian_scalar_momenta(suNg_scalar_field *momenta);
 void gaussian_spinor_field(spinor_field *s);
+void gaussian_spinor_field_fund(spinor_field_fund *s);
 void gaussian_spinor_field_flt(spinor_field_flt *s);
 void z2_spinor_field(spinor_field *s);
+void z2_spinor_field_fund(spinor_field_fund *s);
 
 /* For the fermion force ? */
 void corret_pf_dist_hmc();
@@ -180,7 +213,8 @@ void local_hmc_action(local_action_type type,
                       suNg_scalar_field *momenta_s);
 void pf_local_action(scalar_field *loc_action,
                      spinor_field *pf);
-
+void pf_local_action_fund(scalar_field *loc_action,
+                     spinor_field_fund *pf);
 
 void suNg_field_copy(suNg_field *g1, suNg_field *g2);
 void suNf_field_copy(suNf_field *g1, suNf_field *g2);

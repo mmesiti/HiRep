@@ -37,9 +37,11 @@ typedef struct {
 void init_BCs(BCs_pars_t *pars);
 void free_BCs();
 void apply_BCs_on_represented_gauge_field();
+void apply_BCs_on_represented_gauge_field_fund();/*JW*/
 void apply_BCs_on_fundamental_gauge_field();
 void apply_BCs_on_momentum_field(suNg_av_field *force);
 void apply_BCs_on_spinor_field(spinor_field *sp);
+void apply_BCs_on_spinor_field_fund(spinor_field_fund *sp);
 void apply_BCs_on_spinor_field_flt(spinor_field_flt *sp);
 void apply_background_field_zdir(suNg_field* V,double Q,int n);
 
@@ -78,6 +80,7 @@ void assign_sd2s(spinor_field_flt *out, spinor_field *in);
 
 /* use power method to find max eigvalue of H2 */
 int max_H(spinor_operator H, geometry_descriptor *type, double *max);
+int max_H_fund(spinor_operator_fund H, geometry_descriptor *type, double *max);
 
 /* EVA preconditioning */
 typedef struct _eva_prec {

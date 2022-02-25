@@ -99,6 +99,24 @@ void create_point_source(spinor_field *source,int tau, int color) {
    start_sf_sendrecv(source + beta);
    complete_sf_sendrecv(source + beta);}
 }
+
+/*For creating source with fundamental representations*/
+void create_point_source_fund(spinor_field_fund *source,int tau, int color) {
+  int beta, ix;
+  for (beta=0;beta<4;++beta){
+    spinor_field_zero_f_fund(&source[beta]);
+  }
+  if(COORD[0]==tau/T && COORD[1]==0 && COORD[2]==0 && COORD[3]==0) {
+    ix=ipt(tau-zerocoord[0],0,0,0);
+    for (beta=0;beta<4;++beta){
+      _FIELD_AT(&source[beta],ix)->c[beta].c[color].re = 1.;
+    }
+  }
+   for (beta=0;beta<4;++beta){
+   start_sf_sendrecv_fund(source + beta);
+   complete_sf_sendrecv_fund(source + beta);}
+}
+
 // creates point source for the NF color indices.
 void create_full_point_source(spinor_field *source, int tau) {
 	int col,beta, idx,ix;
@@ -122,6 +140,28 @@ void create_full_point_source(spinor_field *source, int tau) {
 	}
 }
 
+// creates point source for the NG color indices for fundamental flavors.
+void create_full_point_source_fund(spinor_field_fund *source, int tau) {
+	int col,beta, idx,ix;
+        
+	for (beta=0;beta<4*NG;++beta){
+          spinor_field_zero_f_fund(&source[beta]);
+	}
+
+	if(COORD[0]==tau/T && COORD[1]==0 && COORD[2]==0 && COORD[3]==0) {
+		ix=ipt(tau-zerocoord[0],0,0,0);
+		for (col=0;col<NG;++col){
+			for (beta=0;beta<4;++beta){
+				idx = beta + col*4;		
+				_FIELD_AT(&source[idx],ix)->c[beta].c[col].re = 1.;
+			}
+		}
+	}
+	for (beta=0;beta<4*NG;++beta){
+		start_sf_sendrecv_fund(source + beta);
+		complete_sf_sendrecv_fund(source + beta);
+	}
+}
 
 void create_point_source_loc(spinor_field *source, int t, int x, int y, int z, int color) {
   int beta, ix;

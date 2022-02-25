@@ -17,6 +17,8 @@
 #include "clover_tools.h"
 #include "communications.h"
 
+#include <math.h>
+
 static unsigned int n_ws = 0;
 static spinor_field *chi = NULL;
 static spinor_field *Hchi = NULL;
@@ -46,6 +48,13 @@ void force_rhmc(double dt, void *vpar)
 	mpar.shift = ratio->b;
 	mpar.err2 = par->inv_err2; /* this should be high for reversibility */
 	mpar.max_iter = 0; /* no limit */
+
+        #ifdef MEASURE_FORCEHMC
+                double forcestat[2] = {0.,0.};
+        #else
+                double *forcestat = NULL;
+        #endif
+
 
 	if(n_ws < ratio->order+1)
 	{
@@ -90,7 +99,18 @@ void force_rhmc(double dt, void *vpar)
 		for(int n = 0; n < ratio->order; n++)
 		{
 			H(Hchi, &chi[n]);
-			force_fermion_core(Hchi, &chi[n], 1, dt, ratio->a[n+1]);
+			force_fermion_core(Hchi, &chi[n], 1, dt, forcestat, ratio->a[n+1]);
+#ifdef MEASURE_FORCEHMC
+			global_sum(forcestat,1);
+			forcestat[0]*=fabs(dt*ratio->a[n+1])*(_REPR_NORM2/_FUND_NORM2)/((double)(GLB_T*GLB_X*GLB_Y*GLB_Z));
+			global_max(forcestat+1,1);
+			forcestat[1]*=fabs(dt*ratio->a[n+1])*(_REPR_NORM2/_FUND_NORM2);
+			force_ave[par->id]+=forcestat[0];
+			force_max[par->id]+=forcestat[1];
+			lprintf("FORCE_RHMC",10,"avr dt |force| = %1.8e dt maxforce = %1.8e, dt = %1.8e \n",forcestat[0],forcestat[1],dt);
+//			n_inv_iter[par->id-1]+=n_iters;
+#endif
+
 		}
 	}
 

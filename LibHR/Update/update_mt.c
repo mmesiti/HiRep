@@ -166,7 +166,7 @@ int update_ghmc()
   represent_gauge_field();
 
   /* compute new action */
-  lprintf("HMC",30,"Computing new action density...\n");
+  lprintf("HMC",10,"Computing new action density...\n");
   for (int i=0;i<num_mon();++i) {
     const monomial *m = mon_n(i);
     m->correct_la_pf(m);
@@ -313,10 +313,10 @@ int update_ghmc_stripped()
 /*Functions to check forces */
 void corret_pf_dist_hmc(){
     /* init monomials */
-  for (int i=0;i<num_mon();++i) {
-    const monomial *m = mon_n(i);
-    m->init_traj(m);
-  }
+//  for (int i=0;i<num_mon();++i) {
+//    const monomial *m = mon_n(i);
+//    m->init_traj(m);
+//  }
   
   /* generate new momenta */
   lprintf("HMC",30,"Generating gaussian momenta and pseudofermions...\n");
@@ -346,7 +346,7 @@ void calc_one_force(int n_force){
     for(int n = 0; n < ip->nmon; n++){
       const monomial *m=ip->mon_list[n];
       if (m->data.id==n_force){
-        m->force_f(1,m->force_par);
+        m->update_force(1,m->force_par);
         return;
       }
     }

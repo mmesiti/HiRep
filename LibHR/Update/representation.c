@@ -346,7 +346,9 @@ void represent_gauge_field()
 	smear_gauge_field();
 #endif
 
+
 #ifdef ALLOCATE_REPR_GAUGE_FIELD
+  static int first_time=1;
   /* loop on local lattice first */
   _MASTER_FOR(&glattice,ix) {
 //  for(ip=0;ip<glattice.local_master_pieces;ip++)
@@ -358,6 +360,9 @@ void represent_gauge_field()
         suNg *u=pu_gauge(ix,mu);
 #endif
         suNf *Ru=pu_gauge_f(ix,mu);
+	suNg *Fu=pu_gauge_f_fund(ix,mu);
+	*Fu = *((suNg *)u);
+
         #ifdef UNROLL_GROUP_REPRESENT
           _group_represent(*Ru,*u);
         #else
@@ -381,6 +386,8 @@ _OMP_PRAGMA ( _omp_for )
         suNg *u=pu_gauge(ix,mu);
 #endif
         suNf *Ru=pu_gauge_f(ix,mu);
+	suNg *Fu=pu_gauge_f_fund(ix,mu);
+	*Fu = *((suNg *)u);
         #ifdef UNROLL_GROUP_REPRESENT
           _group_represent(*Ru,*u);
         #else
@@ -389,7 +396,18 @@ _OMP_PRAGMA ( _omp_for )
       }
   }
   
+
   apply_BCs_on_represented_gauge_field();
+  apply_BCs_on_represented_gauge_field_fund();
+
+  /* fundamental representation */
+//  if(first_time) {
+//    first_time=0;
+//    u_gauge_f_fund=(suNg_field *)((void*)u_gauge);
+//    apply_BCs_on_represented_gauge_field_fund();
+//    lprintf("represent",10,"%1.6f\n",(*pu_gauge(0,0)).c[0].re);
+//    lprintf("represent",10,"%1.6f\n",(*pu_gauge_f_fund(0,0)).c[0].re);
+//  }
 #else
   static int first_time=1;
   /* wait gauge field transfer */

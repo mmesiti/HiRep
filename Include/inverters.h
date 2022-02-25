@@ -12,6 +12,7 @@
 
 
 typedef void (*spinor_operator)(spinor_field *out, spinor_field *in);
+typedef void (*spinor_operator_fund)(spinor_field_fund *out, spinor_field_fund *in);/*JW*/
 typedef void (*spinor_operator_flt)(spinor_field_flt *out, spinor_field_flt *in);
 typedef void (*spinor_operator_m)(spinor_field *out, spinor_field *in, double m);
 
@@ -48,6 +49,7 @@ typedef struct {
 } g5QMR_fltacc_par;
 
 int g5QMR_mshift(mshift_par *par, spinor_operator M, spinor_field *in, spinor_field *out);
+int g5QMR_mshift_fund(mshift_par *par, spinor_operator_fund M, spinor_field_fund *in, spinor_field_fund *out);/*JW*/
 int g5QMR_mshift_trunc(mshift_par *par, int trunc_iter, spinor_operator M, spinor_field *in, spinor_field *out_trunc, spinor_field *out);
 int g5QMR_fltacc(g5QMR_fltacc_par *par, spinor_operator M, spinor_operator_flt M_flt, spinor_field *in, spinor_field *out);
 
@@ -71,6 +73,7 @@ int MINRES_mshift(mshift_par *par, spinor_operator M, spinor_field *in, spinor_f
 
 int MINRES(MINRES_par *par, spinor_operator M, spinor_field *in, spinor_field *out, spinor_field *trial);
 int MINRES_flt(MINRES_par *par, spinor_operator_flt M, spinor_field_flt *in, spinor_field_flt *out, spinor_field_flt *trial);
+int MINRES_fund(MINRES_par *par, spinor_operator_fund M, spinor_field_fund *in, spinor_field_fund *out, spinor_field_fund *trial);/*JW*/
 
 int eva(int nev,int nevt,int init,int kmax,
                int imax,double ubnd,double omega1,double omega2,

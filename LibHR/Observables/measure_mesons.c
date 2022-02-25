@@ -192,7 +192,6 @@ static void op_propagator(suNf_propagator* out, suNf_propagator* in, gamma_ind i
 
 
 
-
 #define corr_ind(px,py,pz,n_mom,tc,nm,cm) ((px)*(n_mom)*(n_mom)*(lt)*(nm)+(py)*(n_mom)*(lt)*(nm)+(pz)*(lt)*(nm)+ ((cm)*(lt)) +(tc))
 
 /* spinor_fields* are 4xnm arrays of spinor_field ordered([color][spinor])*/
@@ -374,7 +373,6 @@ void measure_diquarks(meson_observable* mo,spinor_field* psi0, spinor_field* psi
   measure_mesons_core(psi0, psi1, eta, mo,nm, tau, 1, 0,GLB_T);
 //  measure_mesons_core(psi1, psi0, eta, mo,nm, tau, 1, 0,GLB_T);
 }
-
 
 void measure_mesons(meson_observable* mo,spinor_field* psi0, spinor_field* eta, int nm, int tau){
   init_corrs(nm,1,mo);

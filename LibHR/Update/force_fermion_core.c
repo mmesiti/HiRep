@@ -487,7 +487,7 @@ void force_clover_logdet(double mass, double residue)
 /* ------------------------------------ */
 /* CALCULATE FORCE OF THE HOPPING TERM  */
 /* ------------------------------------ */
-void force_fermion_core(spinor_field *Xs, spinor_field *Ys, int auto_fill_odd, double dt, double residue)
+void force_fermion_core(spinor_field *Xs, spinor_field *Ys, int auto_fill_odd, double dt, double* forcestat, double residue)
 {
 	double coeff;
 	spinor_field Xtmp, Ytmp;
@@ -554,7 +554,11 @@ void force_fermion_core(spinor_field *Xs, spinor_field *Ys, int auto_fill_odd, d
 			_OMP_PRAGMA(barrier)
 		}
 
+#ifdef MEASURE_FORCEHMC
+		_SITE_FOR_SUM(&glattice,xp,ix,forcestat[0],forcestat[1])
+#else
 		_SITE_FOR(&glattice,xp,ix)
+#endif
 		{
 			int iy;
 			suNf_spinor *chi1, *chi2;
@@ -572,6 +576,14 @@ void force_fermion_core(spinor_field *Xs, spinor_field *Ys, int auto_fill_odd, d
 			_algebra_project_FMAT(f,s1);
 			_algebra_vector_mul_add_assign_g(*_4FIELD_AT(force_sum,ix,0),coeff,f);
 
+#ifdef MEASURE_FORCEHMC
+			double nsq;
+			_algebra_vector_sqnorm_g(nsq,f);
+			nsq=sqrt(nsq);
+			forcestat[0]+=nsq;
+			if (nsq>forcestat[1]) forcestat[1]=nsq;
+#endif
+
 			// Direction 1
 			iy = iup(ix,1);
 			_suNf_FMAT_zero(s1);
@@ -584,6 +596,13 @@ void force_fermion_core(spinor_field *Xs, spinor_field *Ys, int auto_fill_odd, d
 
 			_algebra_project_FMAT(f,s1);
 			_algebra_vector_mul_add_assign_g(*_4FIELD_AT(force_sum,ix,1),coeff,f);
+
+#ifdef MEASURE_FORCEHMC
+			_algebra_vector_sqnorm_g(nsq,f);
+			nsq=sqrt(nsq);
+			forcestat[0]+=nsq;
+			if (nsq>forcestat[1]) forcestat[1]=nsq;
+#endif
 
 			// Direction 2
 			iy = iup(ix,2);
@@ -598,6 +617,13 @@ void force_fermion_core(spinor_field *Xs, spinor_field *Ys, int auto_fill_odd, d
 			_algebra_project_FMAT(f,s1);
 			_algebra_vector_mul_add_assign_g(*_4FIELD_AT(force_sum,ix,2),coeff,f);
 
+#ifdef MEASURE_FORCEHMC
+			_algebra_vector_sqnorm_g(nsq,f);
+			nsq=sqrt(nsq);
+			forcestat[0]+=nsq;
+			if (nsq>forcestat[1]) forcestat[1]=nsq;
+#endif
+
 			// Direction 3
 			iy = iup(ix,3);
 			_suNf_FMAT_zero(s1);
@@ -610,6 +636,13 @@ void force_fermion_core(spinor_field *Xs, spinor_field *Ys, int auto_fill_odd, d
 
 			_algebra_project_FMAT(f,s1);
 			_algebra_vector_mul_add_assign_g(*_4FIELD_AT(force_sum,ix,3),coeff,f);
+
+#ifdef MEASURE_FORCEHMC
+			_algebra_vector_sqnorm_g(nsq,f);
+			nsq=sqrt(nsq);
+			forcestat[0]+=nsq;
+			if (nsq>forcestat[1]) forcestat[1]=nsq;
+#endif
 		} // sites
 	} // pieces
 

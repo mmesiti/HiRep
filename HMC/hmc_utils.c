@@ -64,6 +64,7 @@ static double mass()
 		switch(m->data.type)
 		{
 			case HMC:
+			case HMC_fund:
 			case HMC_ff:
 				nm = ((mon_hmc_par*)mpar)->mass;
 				break;
@@ -99,6 +100,7 @@ static int nf()
 		switch(m->data.type)
 		{
 			case HMC:
+			case HMC_fund:
 			case HMC_ff:
 				nf += 2;
 				break;
@@ -270,6 +272,7 @@ int init_mc(hmc_flow *rf, char *ifile) {
 
 #ifdef ALLOCATE_REPR_GAUGE_FIELD
   u_gauge_f=alloc_gfield_f(&glattice);
+  u_gauge_f_fund=alloc_gfield_f_fund(&glattice);
 #endif
 
   u_gauge_f_flt=alloc_gfield_f_flt(&glattice);
@@ -356,7 +359,7 @@ int init_mc(hmc_flow *rf, char *ifile) {
   
   apply_BCs_on_fundamental_gauge_field(); 
   represent_gauge_field();
-
+  lprintf("HMC_UTILS",10,"init hmc\n");
   /* init HMC */
   init_ghmc(&hmc_var.hmc_p);
 
@@ -393,6 +396,7 @@ int end_mc() {
   free_gfield(u_gauge);
 #ifdef ALLOCATE_REPR_GAUGE_FIELD
   free_gfield_f(u_gauge_f);
+  free_gfield_f_fund(u_gauge_f_fund);
 #endif
   if(u_scalar!=NULL){
 	  free_scalar_field(u_scalar);

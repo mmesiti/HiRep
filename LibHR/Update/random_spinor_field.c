@@ -21,6 +21,16 @@ void gaussian_spinor_field(spinor_field *s) {
 	apply_BCs_on_spinor_field(s);
 }
 
+void gaussian_spinor_field_fund(spinor_field_fund *s) {
+	const double c1=1./sqrt(2.);
+	int i;
+	geometry_descriptor *type = s->type;
+	for(i=0;i<type->local_master_pieces;i++)
+ 	  gauss((double*)(s->ptr+(type->master_start[i]-type->master_shift)),(type->master_end[i]-type->master_start[i]+1)*sizeof(suNg_spinor)/sizeof(double));
+	spinor_field_mul_f_fund(s,c1,s);
+	apply_BCs_on_spinor_field_fund(s);
+}
+
 void gaussian_spinor_field_flt(spinor_field_flt *s) {
 	const float c1=(float)(1./sqrt(2.));
 	int i;
@@ -40,3 +50,10 @@ void z2_spinor_field(spinor_field *s) {
 	apply_BCs_on_spinor_field(s);
 }
 
+void z2_spinor_field_fund(spinor_field_fund *s) {
+	int i;
+	geometry_descriptor *type = s->type;
+	for(i=0;i<type->local_master_pieces;i++)
+ 	  ranz2((double*)(s->ptr+(type->master_start[i]-type->master_shift)),(type->master_end[i]-type->master_start[i]+1)*sizeof(suNg_spinor)/sizeof(double));
+	apply_BCs_on_spinor_field_fund(s);
+}

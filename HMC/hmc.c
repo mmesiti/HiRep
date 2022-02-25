@@ -147,8 +147,6 @@ static void H2eva(spinor_field *out, spinor_field *in){
   g5Dphi_sq(eigval_var.evamass, out, in);
 }
 
-
-
 int main(int argc,char *argv[]) {
   int i,acc, rc;
   char sbuf[128];

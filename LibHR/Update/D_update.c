@@ -78,6 +78,15 @@ void H_flt(spinor_field_flt *out, spinor_field_flt *in){
 #endif
 }
 
+void H_fund(spinor_field_fund *out, spinor_field_fund *in){
+#ifdef UPDATE_EO
+//  lprintf("pseudofermion", 10, "%1.6f,%1.6f,%1.6f,%1.6f,%1.6f,%1.6f,%1.6f,%1.6f\n",*(in),*(in+1),*(in+2),*(in+3),*(in+4),*(in+5),*(in+6),*(in+7));
+  g5Dphi_eopre_fund(static_mass, out, in);
+#else
+  g5Dphi_fund(static_mass, out, in);
+#endif
+}
+
 void D(spinor_field *out, spinor_field *in){
 #ifdef UPDATE_EO
 #ifdef WITH_CLOVER
@@ -103,6 +112,13 @@ void D_flt(spinor_field_flt *out, spinor_field_flt *in){
 #endif
 }
 
+void D_fund(spinor_field_fund *out, spinor_field_fund *in){
+#ifdef UPDATE_EO
+  Dphi_eopre_fund(static_mass, out, in);
+#else
+  Dphi_fund(static_mass, out, in);
+#endif
+}
 
 void Qtm_p(spinor_field *out, spinor_field *in){
 #ifdef UPDATE_EO

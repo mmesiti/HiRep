@@ -47,6 +47,7 @@
 /* Mesons parameters */
 typedef struct _input_mesons {
 	char mstring[1024];
+	char mfstring[1024];
 	int use_input_mass;
 	double precision;
 	int meas_mixed;
@@ -54,7 +55,9 @@ typedef struct _input_mesons {
 	int nhits_disc;
 	int def_semwall;
 	int def_point;
+	int def_point_fund;
 	int def_baryon;
+	int def_chimera;
 	int def_glueball;
 	int ext_semwall;
 	int ext_point;
@@ -80,13 +83,14 @@ typedef struct _input_mesons {
 	int degree_hopping;  // The degree of the hopping parameter expasion
 
 	/* for the reading function */
-	input_record_t read[31];
+	input_record_t read[34];
 } input_mesons;
 
 #define init_input_mesons(varname) \
 { \
   .read={\
-    {"quark quenched masses", "mes:masses = %s", STRING_T, (varname).mstring}, \
+    {"fermion quenched masses", "mes:masses = %s", STRING_T, (varname).mstring}, \
+    {"fundamental fermion quenched masses", "mes:masses_fund = %s", STRING_T, (varname).mfstring}, \
     {"use input mass", "mes:use_input_mass = %d",INT_T, &(varname).use_input_mass},\
     {"inverter precision", "mes:precision = %lf", DOUBLE_T, &(varname).precision},\
     {"measure mixed correlators", "mes:meas_mixed = %d",INT_T,&(varname).meas_mixed},\
@@ -94,6 +98,7 @@ typedef struct _input_mesons {
     {"number of noisy sources per cnfg for disconnected", "mes:nhits_disc = %d", INT_T, &(varname).nhits_disc}, \
     {"enable default semwall", "mes:def_semwall = %d",INT_T, &(varname).def_semwall},	\
     {"enable default point", "mes:def_point = %d",INT_T, &(varname).def_point},		\
+    {"enable default point for fundamental fermions", "mes:def_point_fund = %d",INT_T, &(varname).def_point_fund},		\
     {"enable default gfwall", "mes:def_gfwall = %d",INT_T, &(varname).def_gfwall},	\
     {"enable extended semwall", "mes:ext_semwall = %d",INT_T, &(varname).ext_semwall},	\
     {"enable extended point", "mes:ext_point = %d",INT_T, &(varname).ext_point},		\
@@ -107,6 +112,7 @@ typedef struct _input_mesons {
     {"Distance of t_initial from Dirichlet boundary", "mes:dirichlet_dt = %d", INT_T, &(varname).dt},\
     {"maximum component of momentum", "mes:momentum = %d", INT_T, &(varname).n_mom}, \
     {"enable baryon", "mes:def_baryon = %d",INT_T, &(varname).def_baryon},		\
+    {"enable chimera", "mes:def_chimera = %d",INT_T, &(varname).def_chimera},		\
     {"enable glueball", "mes:def_glueball = %d",INT_T, &(varname).def_glueball},		\
     {"enable background electric field", "mes:background_field = %d",INT_T, &(varname).background_field},	\
     {"electric charge", "mes:Q = %lf",DOUBLE_T, &(varname).Q},	\
@@ -260,7 +266,7 @@ int main(int argc,char *argv[]) {
   FILE* list;
   filename_t fpars;
   int nm;
-  double m[256];
+  double m[256], mf[256];
   
 
   /* setup process id and communications */
@@ -335,6 +341,14 @@ int main(int argc,char *argv[]) {
       nm++;
       cptr = strtok(NULL, ";");
     }    
+    strcpy(tmp,mes_var.mfstring);
+    cptr = strtok(tmp, ";");
+    nm=0;
+    while(cptr != NULL) {
+      mf[nm]=atof(cptr);
+      nm++;
+      cptr = strtok(NULL, ";");
+    }    
   }
 
   /* setup communication geometry */
@@ -353,6 +367,7 @@ int main(int argc,char *argv[]) {
   u_gauge=alloc_gfield(&glattice);
 #ifdef ALLOCATE_REPR_GAUGE_FIELD
   u_gauge_f=alloc_gfield_f(&glattice);
+  u_gauge_f_fund=alloc_gfield_f_fund(&glattice);
 #endif
 #ifdef WITH_CLOVER
   clover_init(mes_var.csw);
@@ -362,10 +377,11 @@ int main(int argc,char *argv[]) {
 #endif
 
   lprintf("MAIN",0,"Inverter precision = %e\n",mes_var.precision);
-  lprintf("MAIN",0,"Mass[%d] = %f",0,m[0]);
+  lprintf("MAIN",0,"Mass[%d] = %f\n",0,m[0]);
+  lprintf("MAIN",0,"Fundamental Mass[%d] = %f",0,mf[0]);
   for(k=1;k<nm;k++)
-    lprintf("MAIN",0,", Mass[%d] = %f",k,m[k]);
-  lprintf("MAIN",0,"\n",k,m[k]);
+    lprintf("MAIN",0,", Mass[%d] = %f, Fundamental Mass[%d] = %f",k,m[k],mf[k]);
+  lprintf("MAIN",0,"\n",k,m[k],mf[k]);
   lprintf("MAIN",0,"Number of noisy sources per cnfg = %d. Does not affect point sources\n",mes_var.nhits_2pt);
   if (mes_var.def_semwall){
     lprintf("MAIN",0,"Spin Explicit Method (SEM) wall sources\n");    
@@ -373,9 +389,15 @@ int main(int argc,char *argv[]) {
   if (mes_var.def_point){
     lprintf("MAIN",0,"Point sources\n");    
   }
+  if (mes_var.def_point_fund){
+    lprintf("MAIN",0,"Point sources for fundamental fermions\n");    
+  } 
  	if (mes_var.def_baryon){
     lprintf("MAIN",0,"Baryon masses\n");    
   }
+ 	if (mes_var.def_chimera){
+    lprintf("MAIN",0,"Chimera masses\n");    
+  } 
  	if (mes_var.def_glueball){
     lprintf("MAIN",0,"Glueball masses\n");    
   }
@@ -469,9 +491,16 @@ int main(int argc,char *argv[]) {
      if (mes_var.def_point){
        measure_spectrum_pt(tau,nm,m,mes_var.n_mom,mes_var.nhits_2pt,i,mes_var.precision);
      }
+     if (mes_var.def_point_fund){
+       measure_spectrum_fund_pt(tau,nm,mf,mes_var.n_mom,mes_var.nhits_2pt,i,mes_var.precision);
+     }
+ 
      if (mes_var.def_baryon){
        measure_baryons(m,i,mes_var.precision);
      }
+     if (mes_var.def_chimera){
+       measure_chimera(m,mf,i,mes_var.precision);
+     } 
      if (mes_var.def_glueball){
        //measure_glueballs(); //This does not seem to exist 
      }

@@ -17,6 +17,7 @@ typedef enum {
 	LuscherWeisz,
 	FourFermion,
 	HMC,
+	HMC_fund,
 	RHMC,
 	TM,
 	TM_alt,
@@ -55,6 +56,13 @@ typedef struct {
 	force_hmc_par fpar;
 	spinor_field *pf;
 } mon_hmc_par;
+
+typedef struct {
+	double mass;
+	int mre_past;
+	force_hmc_fund_par fpar;
+	spinor_field_fund *pf;
+} mon_hmc_fund_par;
 
 typedef struct {
 	double mass;
@@ -115,12 +123,14 @@ typedef struct _monomial {
 	void (*correct_pf)(const struct _monomial*);
 	void (*correct_la_pf)(const struct _monomial*);
 	const spinor_field *(*pseudofermion)(const struct _monomial*);
+	const spinor_field_fund *(*fund_pseudofermion)(const struct _monomial*);
 	void (*add_local_action)(const struct _monomial*, scalar_field*);
 } monomial;
 
 struct _monomial* pg_create(const monomial_data*);
 struct _monomial* lw_create(const monomial_data*);
 struct _monomial* hmc_create(const monomial_data*);
+struct _monomial* hmc_fund_create(const monomial_data*);
 struct _monomial* rhmc_create(const monomial_data*);
 struct _monomial* tm_create(const monomial_data*);
 struct _monomial* tm_alt_create(const monomial_data*);

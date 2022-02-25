@@ -17,6 +17,8 @@
 #include "clover_tools.h"
 #include "communications.h"
 
+#include <math.h>
+
 spinor_field *Xs=NULL;
 spinor_field *Ys=NULL;
 spinor_field *eta=NULL;
@@ -74,6 +76,12 @@ void force_hmc(double dt, void *vpar)
 	mpar.n = 1;
 	mpar.shift = &tmp;
 	mpar.shift[0] = 0;
+
+	#ifdef MEASURE_FORCEHMC
+		double forcestat[2] = {0.,0.};
+	#else
+		double *forcestat = NULL;
+	#endif
 
 #ifndef UPDATE_EO
 
@@ -173,11 +181,11 @@ void force_hmc(double dt, void *vpar)
 
 	if(par->hasenbusch != 1)
 	{
-		force_fermion_core(Xs, Ys, 1, dt, 1.);
+		force_fermion_core(Xs, Ys, 1, dt, forcestat, 1.);
 	}
 	else
 	{
-		force_fermion_core(Xs, Ys, 1, dt, par->b);
+		force_fermion_core(Xs, Ys, 1, dt, forcestat, par->b);
 	}
 
 #ifdef WITH_CLOVER_EO
@@ -189,5 +197,24 @@ void force_hmc(double dt, void *vpar)
 
 #endif
 
+#ifdef MEASURE_FORCEHMC
+    global_sum(forcestat,1);
+    if (par->hasenbusch !=1){
+        forcestat[0]*=fabs(dt)*(_REPR_NORM2/_FUND_NORM2)/((double)(GLB_T*GLB_X*GLB_Y*GLB_Z));
+        global_max(forcestat+1,1);
+        forcestat[1]*=fabs(dt)*(_REPR_NORM2/_FUND_NORM2);
+    }
+    else{
+        forcestat[0]*=fabs(dt*par->b)*(_REPR_NORM2/_FUND_NORM2)/((double)(GLB_T*GLB_X*GLB_Y*GLB_Z));
+        global_max(forcestat+1,1);
+        forcestat[1]*=fabs(dt*par->b)*(_REPR_NORM2/_FUND_NORM2);
+    }
+    force_ave[par->id]+=forcestat[0];
+    force_max[par->id]+=forcestat[1];
+    lprintf("FORCE_HMC",10,"avr dt |force| = %1.8e dt maxforce = %1.8e, dt = %1.8e \n",forcestat[0],forcestat[1],dt);
+    n_inv_iter[par->id-1]+=n_iters;
+#endif
+
 	fermion_force_end(dt, force);
+
 }

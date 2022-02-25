@@ -88,6 +88,13 @@ void force_hmc_tm(double dt, void *vpar)
 	mpar.shift = &tmp;
 	mpar.shift[0] = 0;
 	
+       #ifdef MEASURE_FORCEHMC
+                double forcestat[2] = {0.,0.};
+        #else
+                double *forcestat = NULL;
+        #endif
+
+
 	if(par->hasenbusch == 0) // 1/(Q^2+mu^2)
 	{
 		/* Ye = (\hat{Q}_+ \hat{Q}_-)^(-1)\phi */
@@ -105,7 +112,7 @@ void force_hmc_tm(double dt, void *vpar)
 		/* Xo = (M_ee^+)^-1 M_eo Xe */
 		Dphi_(xi, Xs);
 		Mee_inv(&Xo, par->mass, par->mu, xi);
-		force_fermion_core(Xs, Ys, 0, dt, 1.);
+		force_fermion_core(Xs, Ys, 0, dt, forcestat, 1.);
 	}
 	else // (Q^2+mu^2)/(Q^2)
 	{
@@ -129,7 +136,7 @@ void force_hmc_tm(double dt, void *vpar)
 		/* Xo = (M_ee^-)^-1 M_eo Xe */
 		Dphi_(xi,Xs);
 		Mee_inv(&Xo, par->mass, -par->mu, xi);
-		force_fermion_core(Xs, Ys, 0, dt, 1.);
+		force_fermion_core(Xs, Ys, 0, dt, forcestat, 1.);
 
 		//Second contribution to force
 		// Ye = pf
@@ -142,7 +149,7 @@ void force_hmc_tm(double dt, void *vpar)
 		/* Xo = (M_ee^-)^-1 M_eo Xe */
 		Dphi_(xi, Xs);
 		Mee_inv(&Xo, par->mass, -par->mu-par->b, xi);
-		force_fermion_core(Xs, Ys, 0, -dt, 1.);
+		force_fermion_core(Xs, Ys, 0, -dt, forcestat, 1.);
 	}
 
 	fermion_force_end(dt, force);

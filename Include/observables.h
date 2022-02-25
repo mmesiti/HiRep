@@ -17,6 +17,8 @@
 #include "suN.h"
 #include "inverters.h"
 #include "meson_observables.h"
+//#include "propagator_fund.h"
+//#include "propagator.h"
 #include <stdio.h>
 
 #define SPIN_2D_INDEX(i,j) ( (i)*4 + (j) )
@@ -73,7 +75,9 @@ void z2semwall_qprop_free_new();
 void z2semwall_mesons_new(int conf, int nhits, int nm, double *m, double acc);
 
 void create_point_source(spinor_field *source,int tau,int color);
+void create_point_source_fund(spinor_field_fund *source,int tau,int color);
 void create_full_point_source(spinor_field *source, int tau);
+void create_full_point_source_fund(spinor_field_fund *source, int tau);
 void create_point_source_loc(spinor_field *source, int t, int x, int y, int z, int color);
 int create_diluted_source_equal_eo(spinor_field *source);
 void create_diluted_source_equal_atau_eo(spinor_field *source, int tau);
@@ -282,6 +286,25 @@ void init_triplet_discon_correlators();
 
 void ff_observables();
 
+/* Functions for fundamental representations */
 
+void init_propagator_fund_eo(int nm, double *m, double acc);
+void free_propagator_fund_eo();
+void eig_init_fund(int nev, int nevt, int kmax, int maxiter, double lbnd, double omega1, double omega2);
+
+void calc_propagator_eo_fund(spinor_field_fund *psi, spinor_field_fund *eta, int ndilute);
+void calc_propagator_fund(spinor_field_fund *psi, spinor_field_fund* eta, int ndilute);
+void calc_propagator_multisource_fund(spinor_field_fund *psi, spinor_field_fund* eta, int ndilute);
+void calc_deflated_propagator_fund(spinor_field_fund *psi, spinor_field_fund* eta, int ndilute, int Nuse);
+void copy_evec_fund( int n, spinor_field_fund* psi1, double *eval );
+
+void measure_mesons_core_fund(spinor_field_fund* psi0, spinor_field_fund* psi1, spinor_field_fund* eta, meson_observable* mo, int nm, int tau, int n_mom, int offset,int lt);
+void measure_mesons_fund(meson_observable* mo,spinor_field_fund *psi0, spinor_field_fund *eta, int nm,int tau);
+void measure_conserved_currents_fund(meson_observable* mo,spinor_field_fund* psi0, spinor_field_fund* eta, int nm, int tau);
+void measure_point_mesons_momenta_fund(meson_observable* mo,spinor_field_fund* psi0, spinor_field_fund* eta, int nm, int tau, int n_mom);
+void print_mesons_core(meson_observable* mo,double norm, int conf, int nm, double* mass, int lt, int n_mom, char* label);
+
+void contract_chimera(spinor_field *chi0,spinor_field_fund *psi0, int tau);
+//void propagator_diquark(complex dq, suNf_propagator_fund S,suNf_propagator_fund Stilde, int i, int ip);
 #endif 
 

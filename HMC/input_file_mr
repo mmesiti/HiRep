@@ -43,12 +43,12 @@ SF_sign = 1
 // Runtime variables
 //example: run1_8x8x8x8nc2rFUNnf0b0.000000m0.000000
 run name = run1
-save freq = 10000
+save freq = 200
 meas freq = 1
 conf dir = .
 gauge start = random 
 // run1_6x6x6x6nc2rADJnf2b6.000000m-0.000000n10
-last conf = +1
+last conf = +4
 
 // Mesons
 mes:make = false
@@ -73,14 +73,14 @@ eva:mass = 0
 monomial {
 	id = 0
 	type = gauge
-	beta = 6.5
+	beta = 6.4
 	level = 1
 }
 
 monomial {
 	id = 1
 	type = hmc
-	mass = -0.5
+	mass = -0.2
 	mt_prec = 1e-14
 	force_prec = 1e-14
 	mre_past = 4
@@ -100,6 +100,16 @@ monomial {
 //	level = 0
 //}
 
+monomial {
+	id = 2
+	type = hmc_fund
+	mass = -0.2
+	mt_prec = 1e-14
+	force_prec = 1e-14
+	mre_past = 4
+	level = 0
+}
+
 //monomial {
 //	id = 2
 //	type = scalar
@@ -112,13 +122,13 @@ monomial {
 integrator {
 	level = 0
 	type = o2mn
-	steps = 10
+	steps = 1
 }
 
 integrator {
 	level = 1
 	type = o2mn
-	steps = 2
+	steps = 1
 }
 
 //auxfield_start = cold: set pi to zero and sigma to start value

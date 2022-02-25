@@ -15,6 +15,11 @@ void Dphi(double m0, spinor_field *out, spinor_field *in);
 void g5Dphi(double m0, spinor_field *out, spinor_field *in);
 void g5Dphi_sq(double m0, spinor_field *out, spinor_field *in);
 
+void Dphi_fund_(spinor_field_fund *out, spinor_field_fund *in);
+void Dphi_fund(double m0, spinor_field_fund *out, spinor_field_fund *in);
+void g5Dphi_fund(double m0, spinor_field_fund *out, spinor_field_fund *in);
+void g5Dphi_sq_fund(double m0, spinor_field_fund *out, spinor_field_fund *in);
+
 void Dphi_flt_(spinor_field_flt *out, spinor_field_flt *in);
 void Dphi_flt(double m0, spinor_field_flt *out, spinor_field_flt *in);
 void g5Dphi_flt(double m0, spinor_field_flt *out, spinor_field_flt *in);
@@ -39,6 +44,11 @@ void Dphi_oepre(double m0, spinor_field *out, spinor_field *in);
 void g5Dphi_eopre(double m0, spinor_field *out, spinor_field *in);
 void g5Dphi_eopre_sq(double m0, spinor_field *out, spinor_field *in);
 
+void Dphi_eopre_fund(double m0, spinor_field_fund *out, spinor_field_fund *in);
+void Dphi_oepre_fund(double m0, spinor_field_fund *out, spinor_field_fund *in);
+void g5Dphi_eopre_fund(double m0, spinor_field_fund *out, spinor_field_fund *in);
+void g5Dphi_eopre_sq_fund(double m0, spinor_field_fund *out, spinor_field_fund *in);
+
 void Dphi_eopre_flt(double m0, spinor_field_flt *out, spinor_field_flt *in);
 void Dphi_oepre_flt(double m0, spinor_field_flt *out, spinor_field_flt *in);
 void g5Dphi_eopre_flt(double m0, spinor_field_flt *out, spinor_field_flt *in);
@@ -55,9 +65,11 @@ void set_dirac_mass(double mass); //this is the mass used in the following opera
 double get_dirac_mass();
 void set_twisted_mass(double mass); //this is the twisted mass used in the twisted mass operators (Q)
 void H(spinor_field *out, spinor_field *in);
+void H_fund(spinor_field_fund *out, spinor_field_fund *in);
 void H_flt(spinor_field_flt *out, spinor_field_flt *in);
 void H2(spinor_field *out, spinor_field *in);
 void D(spinor_field *out, spinor_field *in);
+void D_fund(spinor_field_fund *out, spinor_field_fund *in);
 void D_flt(spinor_field_flt *out, spinor_field_flt *in);
 
 void Qtm_p(spinor_field *out, spinor_field *in);

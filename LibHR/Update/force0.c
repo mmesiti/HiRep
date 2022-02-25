@@ -15,6 +15,7 @@
 #include <math.h>
 
 void force0(double dt, void *vpar){
+//  lprintf("force0",10,"force0 see?\n");
   #ifdef TIMING
   struct timeval start, end;
   struct timeval etime;
@@ -28,6 +29,7 @@ void force0(double dt, void *vpar){
 	force_gauge_par *par = (force_gauge_par*)vpar;
 	suNg_av_field *force = *par->momenta;
 	double coeff = -dt*par->beta/NG;
+	double beta = par->beta;
 
 	/* check input types */
 	_TWO_SPINORS_MATCHING(u_gauge,par->momenta);
@@ -64,10 +66,10 @@ void force0(double dt, void *vpar){
     global_sum(forcestat,1);
     global_max(forcestat+1,1);
     
-    forcestat[0]*=beta/((4.*NG)*GLB_VOLUME);
+    forcestat[0]*=beta/((1.*NG)*GLB_VOLUME);
     forcestat[1]*=beta/((double)(NG));
     //    lprintf("FORCE-STAT",10," force0 : dt= %1.8e avr |force|= %1.8e maxforce= %1.8e \n",dt,forcestat[0],forcestat[1]);
-    lprintf("FORCE_STAT",20,"GF: avr dt |force| = %1.8e dt maxforce = %1.8e, dt = %1.8e \n",forcestat[0]*dt,forcestat[1]*dt,dt);
+    lprintf("FORCE_STAT",10,"GF: avr dt |force| = %1.8e dt maxforce = %1.8e, dt = %1.8e \n",forcestat[0]*dt,forcestat[1]*dt,dt);
     force_ave[0]+=dt*forcestat[0];
     force_max[0]+=dt*forcestat[1];    
     //  }

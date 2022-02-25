@@ -345,6 +345,7 @@ int main(int argc,char *argv[]) {
   u_gauge=alloc_gfield(&glattice);
 #ifdef ALLOCATE_REPR_GAUGE_FIELD
   u_gauge_f=alloc_gfield_f(&glattice);
+  u_gauge_f_fund=alloc_gfield_f_fund(&glattice);
 #endif
 
   lprintf("MAIN",0,"Inverter precision = %e\n",mes_var.precision);
