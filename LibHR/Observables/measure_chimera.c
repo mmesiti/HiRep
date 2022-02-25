@@ -29,7 +29,7 @@
 #include <string.h>
 #include "meson_observables.h"
 #define PI 3.141592653589793238462643383279502884197
-//#define ONORM 0.7071067811865476
+#define ONORM 0.7071067811865476
 
 //void _propagator_diquark(complex dq)
 //{
@@ -56,10 +56,10 @@
 
 	eas[0][0][1] = ONORM;
 	eas[0][1][0] = -ONORM;
-	eas[1][1][2] = ONORM;
-	eas[1][2][1] = -ONORM;
-	eas[2][0][3] = ONORM;
-	eas[2][3][0] = -ONORM;
+	eas[1][0][3] = ONORM;
+	eas[1][3][0] = -ONORM;
+	eas[2][1][2] = ONORM;
+	eas[2][2][1] = -ONORM;
 	eas[3][0][2] = 0.5;
 	eas[3][1][3] = -0.5;
 	eas[3][2][0] = -0.5;
